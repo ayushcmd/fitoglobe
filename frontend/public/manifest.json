@@ -1,0 +1,27 @@
+{
+  "name": "FitoGlobe",
+  "short_name": "FitoGlobe",
+  "description": "AI-powered fitness & nutrition tracker",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#07070E",
+  "theme_color": "#C8FF00",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["health", "fitness"],
+  "lang": "en",
+  "scope": "/"
+}
