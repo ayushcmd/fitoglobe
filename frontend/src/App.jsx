@@ -2493,6 +2493,23 @@ export default function FitoGlobe() {
 
   const t = T[lang] || T.en;
 
+  // ✅ Google OAuth callback handler
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const cbToken = params.get("token");
+    const onboarding = params.get("onboarding");
+    if (cbToken) {
+      localStorage.setItem("fitoglobe_token", cbToken);
+      window.history.replaceState({}, "", "/");
+      authService.getMe().then(u => {
+        if (u) {
+          setUser(u);
+          setScreen(onboarding === "true" ? "onboard" : "app");
+        }
+      });
+    }
+  }, []);
+
   useEffect(() => {
     if (screen === "app") {
       authService.getMe().then(u => { if(u) setUser(u); }).catch(()=>{});
@@ -2518,7 +2535,6 @@ export default function FitoGlobe() {
     authService.logout(); setUser(null); setScreen("language"); setProfOpen(false); setPage("dashboard");
   };
 
-  // ✅ scan and chat added
   const pages = {
     dashboard: <DashboardPage t={t} user={user}/>,
     workouts:  <WorkoutPage t={t}/>,
@@ -2531,7 +2547,6 @@ export default function FitoGlobe() {
     chat:      <ChatPage/>,
   };
 
-  // ✅ sticky header for scan and chat too
   const stickyPages = {
     diet: t.diet,
     ai:   t.ai,
