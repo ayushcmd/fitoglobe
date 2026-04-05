@@ -138,10 +138,10 @@ VITE_API_URL=https://fitoglobe-backend.onrender.com
 - [x] Fito Chat (AI fitness chatbot)
 - [x] Multilingual support (EN/ES/JA/KO)
 - [x] Google OAuth
-- [x] PWA support
+- [ ] PWA support
 - [ ] Play Store deployment via Bubblewrap TWA
 - [ ] Voice meal logging
-- [ ] AI meal planner
+
 
 ---
 
