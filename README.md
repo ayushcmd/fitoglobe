@@ -8,6 +8,10 @@
 
 [![Live](https://img.shields.io/badge/Live-fitoglobe.vercel.app-C8FF00?style=flat-square&logo=vercel&logoColor=black)](https://fitoglobe.vercel.app)
 
+<div align="center">
+  <img src="https://img.shields.io/badge/%20Best%20on%20Mobile-Open%20in%20phone%20browser%20for%20app--like%20feel-FF3CAC?style=for-the-badge&logoColor=white"/>
+</div>
+
 </div>
 
 ---
@@ -139,12 +143,10 @@ VITE_API_URL=https://fitoglobe-production.up.railway.app
 - [x] Multilingual support (EN/ES/JA/KO)
 - [x] Google OAuth
 - [x] Migrated to Railway + Supabase (zero cold starts)
-- [ ] PWA support
-- [ ] Play Store deployment via Bubblewrap TWA
-- [ ] Voice meal logging
+
 
 ---
 
 <div align="center">
-  <sub>Built by Ayush — India</sub>
+  <sub>Built with ◆ by Ayush — India</sub>
 </div>
