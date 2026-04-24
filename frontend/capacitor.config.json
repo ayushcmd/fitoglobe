@@ -1,0 +1,8 @@
+{
+  "appId": "com.fitoglobe.app",
+  "appName": "FitoGlobe",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  }
+}

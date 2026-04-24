@@ -477,10 +477,10 @@ const DashboardPage = ({ t, user }) => {
 
   // Motivational messages
   const motives = [
-    "Every rep counts. 💪","You showed up. That's half the battle. 🔥",
-    "Progress > Perfection. ⚡","Your only competition is yesterday's you. 🎯",
-    "Small steps, big results. 🚀","Consistency beats intensity. 💎",
-    "Pain today, strength tomorrow. 🏆","You've got this. Keep going. ✨",
+    "Every rep counts. ","You showed up. That's half the battle. ",
+    "Progress > Perfection. ⚡","Your only competition is yesterday's you. ",
+    "Small steps, big results. ","Consistency beats intensity. ",
+    "Pain today, strength tomorrow. ","You've got this. Keep going. ",
   ];
   const motive = motives[Math.floor(Date.now()/30000) % motives.length];
 
@@ -618,7 +618,7 @@ const DashboardPage = ({ t, user }) => {
       </div>
       {sessions.length === 0
         ? <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:14, padding:24, textAlign:"center", color:C.sub, fontSize:13 }}>
-            No workouts yet — log your first exercise! 💪
+            No workouts yet — log your first exercise! 
           </div>
         : sessions.slice(0,3).map(w=>(
           <div key={w.id} style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:14, padding:"14px 16px", marginBottom:10, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
@@ -777,9 +777,9 @@ const AddExercisePopup = ({ exercise, onSave, onClose }) => {
 };
 
 const WorkoutPage = ({ t }) => {
-  const [sessions,  setSessions]  = useState([]);
-  const [exercises, setExercises] = useState([]);
-  const [loading,   setLoading]   = useState(true);
+  const [sessions,  setSessions]  = useState(_workoutCache?.sessions || []);
+  const [exercises, setExercises] = useState(_workoutCache?.exercises || []);
+  const [loading,   setLoading]   = useState(!_workoutCache);
   const [showLib,   setShowLib]   = useState(false);
   const [toast,     setToast]     = useState("");
   const [exFilter,  setExFilter]  = useState("all");
@@ -794,6 +794,7 @@ const WorkoutPage = ({ t }) => {
       workoutService.getSessions(),
       workoutService.getExercises({ lang:"en" }),
     ]).then(([s,e]) => {
+      _workoutCache = { sessions: s.sessions||[], exercises: e.exercises||[] };
       setSessions(s.sessions||[]);
       setExercises(e.exercises||[]);
       setLoading(false);
@@ -993,9 +994,13 @@ const WorkoutPage = ({ t }) => {
 // 2. useEffect debounce — food.length < 2 instead of < 3
 // Everything else is 100% identical to your original.
 
+let _nutritionCache = null;
+let _workoutCache   = null;
+let _progressCache  = null;
+
 const NutritionPage = ({ t }) => {
-  const [data,     setData]     = useState(null);
-  const [loading,  setLoading]  = useState(true);
+  const [data,     setData]     = useState(_nutritionCache);
+  const [loading,  setLoading]  = useState(!_nutritionCache);
   const [showAdd,  setShowAdd]  = useState(false);
   const [meal,     setMeal]     = useState("breakfast");
   const [food,     setFood]     = useState("");
@@ -1010,7 +1015,7 @@ const NutritionPage = ({ t }) => {
   const load = () => {
     const today = new Date().toISOString().split("T")[0];
     nutritionService.getLogs(today)
-      .then(d => { setData(d); setLoading(false); })
+      .then(d => { _nutritionCache = d; setData(d); setLoading(false); })
       .catch(() => setLoading(false));
   };
 
@@ -1335,9 +1340,9 @@ const NutritionPage = ({ t }) => {
 // ─── PROGRESS PAGE — Replace karo App.jsx mein purane ProgressPage se ─────────
 
 const ProgressPage = ({ t, user }) => {
-  const [logs,        setLogs]        = useState([]);
-  const [sessions,    setSessions]    = useState([]);
-  const [loading,     setLoading]     = useState(true);
+  const [logs,        setLogs]        = useState(_progressCache?.logs || []);
+  const [sessions,    setSessions]    = useState(_progressCache?.sessions || []);
+  const [loading,     setLoading]     = useState(!_progressCache);
   const [targetWeight,setTargetWeight]= useState(localStorage.getItem("fitoglobe_target_weight") || "");
   const [editTarget,  setEditTarget]  = useState(false);
   const [tempTarget,  setTempTarget]  = useState("");
@@ -1349,6 +1354,7 @@ const ProgressPage = ({ t, user }) => {
       progressService.getLogs(),
       workoutService.getSessions(),
     ]).then(([p, w]) => {
+      _progressCache = { logs: p.logs||[], sessions: w.sessions||[] };
       setLogs(p.logs || []);
       setSessions(w.sessions || []);
       setLoading(false);
@@ -1423,7 +1429,7 @@ const ProgressPage = ({ t, user }) => {
     localStorage.setItem("fitoglobe_target_weight", String(val));
     setTargetWeight(String(val));
     setEditTarget(false);
-    setToast("Target weight saved! 🎯");
+    setToast("Target weight saved! ");
     setTimeout(() => setToast(""), 2500);
   };
 
@@ -1493,7 +1499,7 @@ const ProgressPage = ({ t, user }) => {
               <div style={{ fontSize:11, fontWeight:700, color:C.sub, textTransform:"uppercase", letterSpacing:".08em", marginBottom:8 }}>Target Weight</div>
               {targetWeight
                 ? <div style={{ fontFamily:"DM Mono", fontSize:28, fontWeight:900, color:C.lime }}>{targetWeight}</div>
-                : <div style={{ fontSize:28, marginBottom:2 }}>🎯</div>
+                : <div style={{ fontSize:28, marginBottom:2 }}></div>
               }
               <div style={{ fontSize:11, color:targetWeight?C.muted:C.sub, marginTop:2 }}>{targetWeight?"kg":"Tap to set"}</div>
               <div style={{ marginTop:8, fontSize:10, color:C.lime, fontWeight:700 }}>{targetWeight?"✏️ Edit":"+ Set Goal"}</div>
@@ -1505,7 +1511,7 @@ const ProgressPage = ({ t, user }) => {
             <div onClick={() => setEditTarget(false)} style={{ position:"fixed", inset:0, background:"#07070ECC", backdropFilter:"blur(6px)", zIndex:200, display:"flex", alignItems:"center", justifyContent:"center", padding:24 }}>
               <div onClick={e => e.stopPropagation()} className="fade-up"
                 style={{ background:C.card, border:`1px solid ${C.lime}40`, borderRadius:20, padding:24, width:"100%", maxWidth:340 }}>
-                <div style={{ fontWeight:800, fontSize:16, marginBottom:4 }}>🎯 Set Target Weight</div>
+                <div style={{ fontWeight:800, fontSize:16, marginBottom:4 }}> Set Target Weight</div>
                 <div style={{ fontSize:12, color:C.sub, marginBottom:16 }}>Current: {currentWeight}kg · Height: {height}cm</div>
                 <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:16 }}>
                   <input type="number" value={tempTarget} onChange={e => setTempTarget(e.target.value)}
@@ -1549,7 +1555,7 @@ const ProgressPage = ({ t, user }) => {
           {/* BMI — CURRENT */}
           <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:16, padding:18, marginBottom:10 }}>
             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
-              <div style={{ fontWeight:800, fontSize:14 }}>📉 Current BMI</div>
+              <div style={{ fontWeight:800, fontSize:14 }}> Current BMI</div>
               <div style={{ display:"flex", alignItems:"center", gap:8 }}>
                 <span style={{ fontFamily:"DM Mono", fontSize:20, fontWeight:900, color:getBMIColor(currentBMI) }}>{currentBMI}</span>
                 <span style={{ fontSize:11, fontWeight:700, color:getBMIColor(currentBMI), background:getBMIColor(currentBMI)+"20", padding:"2px 8px", borderRadius:20 }}>{getBMILabel(currentBMI)}</span>
@@ -1567,7 +1573,7 @@ const ProgressPage = ({ t, user }) => {
           {targetBMI && (
             <div style={{ background:C.card, border:`1px solid ${C.lime}30`, borderRadius:16, padding:18, marginBottom:14 }}>
               <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
-                <div style={{ fontWeight:800, fontSize:14 }}>🎯 Target BMI</div>
+                <div style={{ fontWeight:800, fontSize:14 }}> Target BMI</div>
                 <div style={{ display:"flex", alignItems:"center", gap:8 }}>
                   <span style={{ fontFamily:"DM Mono", fontSize:20, fontWeight:900, color:getBMIColor(targetBMI) }}>{targetBMI}</span>
                   <span style={{ fontSize:11, fontWeight:700, color:getBMIColor(targetBMI), background:getBMIColor(targetBMI)+"20", padding:"2px 8px", borderRadius:20 }}>{getBMILabel(targetBMI)}</span>
@@ -1590,7 +1596,7 @@ const ProgressPage = ({ t, user }) => {
 
           {!targetWeight && (
             <div style={{ background:C.limeDim, border:`1px solid ${C.lime}30`, borderRadius:14, padding:16, textAlign:"center", marginBottom:14 }}>
-              <div style={{ fontSize:13, color:C.lime, fontWeight:700 }}>🎯 Set a target weight to see your goal BMI!</div>
+              <div style={{ fontSize:13, color:C.lime, fontWeight:700 }}> Set a target weight to see your goal BMI!</div>
               <div onClick={() => { setTempTarget(""); setEditTarget(true); }}
                 style={{ marginTop:8, display:"inline-block", background:C.lime, color:"#000", fontWeight:800, fontSize:12, padding:"7px 18px", borderRadius:20, cursor:"pointer" }}>
                 Set Target
@@ -1605,7 +1611,7 @@ const ProgressPage = ({ t, user }) => {
         <>
           <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:16, padding:18, marginBottom:12 }}>
             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:14 }}>
-              <div style={{ fontWeight:800, fontSize:14 }}>📅 Activity Heatmap</div>
+              <div style={{ fontWeight:800, fontSize:14 }}> Activity Heatmap</div>
               <div style={{ fontSize:11, color:C.sub }}>Last 90 days</div>
             </div>
             <div style={{ display:"flex", gap:0, marginBottom:4 }}>
@@ -1709,7 +1715,7 @@ const ProgressPage = ({ t, user }) => {
                 <div style={{ fontWeight:800, fontSize:13, color:badge.unlocked?C.text:C.sub, marginBottom:4 }}>{badge.label}</div>
                 <div style={{ fontSize:11, color:C.muted, lineHeight:1.4 }}>{badge.desc}</div>
                 {!badge.unlocked && (
-                  <div style={{ marginTop:8, fontSize:10, color:C.muted, background:C.border, padding:"3px 8px", borderRadius:20, display:"inline-block" }}>🔒 Locked</div>
+                  <div style={{ marginTop:8, fontSize:10, color:C.muted, background:C.border, padding:"3px 8px", borderRadius:20, display:"inline-block" }}> Locked</div>
                 )}
               </div>
             ))}
@@ -1904,10 +1910,10 @@ const ProfileModal = ({ user, t, onClose, onLogout }) => {
 };
 
   const tabs = [
-    { id:"profile",  label:"Profile",  icon:"👤" },
-    { id:"settings", label:"Settings", icon:"⚙️"  },
-    { id:"legal",    label:"Legal",    icon:"📄"  },
-    { id:"account",  label:"Account",  icon:"🔐"  },
+    { id:"profile",  label:"Profile",  icon:"" },
+    { id:"settings", label:"Settings", icon:""  },
+    { id:"legal",    label:"Legal",    icon:""  },
+    { id:"account",  label:"Account",  icon:""  },
   ];
 
   const goals = [
@@ -2120,8 +2126,8 @@ globefito@gmail.com`;
           {activeTab === "legal" && (
             <div>
               {[
-                { icon:"🔒", title:"Privacy Policy",  sub:"How we handle your data",        key:"privacy" },
-                { icon:"📋", title:"Terms of Use",     sub:"Rules for using FitoGlobe",      key:"terms"   },
+                { icon:"", title:"Privacy Policy",  sub:"How we handle your data",        key:"privacy" },
+                { icon:"", title:"Terms of Use",     sub:"Rules for using FitoGlobe",      key:"terms"   },
               ].map(item => (
                 <div key={item.key} onClick={() => setLegalModal(item.key)}
                   style={{ display:"flex", alignItems:"center", gap:14, padding:"16px", background:C.bg2, borderRadius:12, marginBottom:10, cursor:"pointer", border:`1px solid ${C.border}` }}
@@ -2191,7 +2197,7 @@ globefito@gmail.com`;
               {/* Sign out */}
               <div onClick={onLogout}
                 style={{ display:"flex", alignItems:"center", gap:12, padding:"14px 16px", cursor:"pointer", borderRadius:12, color:"#FF5050", background:"#FF505010", border:"1px solid #FF505030", marginBottom:10 }}>
-                <span style={{ fontSize:18 }}>🚪</span>
+                <span style={{ fontSize:18 }}></span>
                 <div>
                   <div style={{ fontWeight:700, fontSize:14 }}>Sign Out</div>
                   <div style={{ fontSize:11, color:"#FF505080", marginTop:1 }}>You can sign back in anytime</div>
@@ -2201,7 +2207,7 @@ globefito@gmail.com`;
               {/* Delete account */}
               <div style={{ display:"flex", alignItems:"center", gap:12, padding:"14px 16px", cursor:"pointer", borderRadius:12, color:C.muted, background:C.bg2, border:`1px solid ${C.border}` }}
                 onClick={() => alert("Contact globefito@gmail.com to delete your account [JUST SEND 'delete' MAIL].")}>
-                <span style={{ fontSize:18 }}>🗑️</span>
+                <span style={{ fontSize:18 }}></span>
                 <div>
                   <div style={{ fontWeight:700, fontSize:14, color:C.sub }}>Delete Account</div>
                   <div style={{ fontSize:11, color:C.muted, marginTop:1 }}>Permanently removes all your data</div>
@@ -2471,7 +2477,6 @@ const ChatPage = () => {
 };
 
 
-// ─── MAIN APP ─────────────────────────────────────────────
 // ─── MAIN APP ─────────────────────────────────────────────
 export default function FitoGlobe() {
   const stored = authService.getStoredUser();

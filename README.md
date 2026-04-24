@@ -8,8 +8,6 @@
 
 [![Live](https://img.shields.io/badge/Live-fitoglobe.vercel.app-C8FF00?style=flat-square&logo=vercel&logoColor=black)](https://fitoglobe.vercel.app)
 
-
-
 </div>
 
 ---
@@ -25,8 +23,9 @@ Built with a mobile-first design, it supports 4 languages and auto-detects units
 ## Features
 
 **Fitness Tracking**
-- Log workouts with sets, reps, weight and calorie estimates
+- Log workouts with sets, reps, and calorie estimates
 - Full exercise library with muscle group filters
+- Per-exercise stopwatch with lap tracking
 - Day streak tracking and activity heatmap
 
 **Nutrition**
@@ -35,7 +34,7 @@ Built with a mobile-first design, it supports 4 languages and auto-detects units
 - Daily calorie goal with live progress rings
 
 **AI Features**
-- Fito Chat — GROQ-powered fitness chatbot
+- Fito Chat — Groq-powered fitness chatbot
 - Food Scanner — scan any food photo for instant nutrition info
 - AI Coach — personalized coaching conversations
 
@@ -56,13 +55,12 @@ Built with a mobile-first design, it supports 4 languages and auto-detects units
 
 | Layer | Technology |
 |-------|-----------|
-| Frontend | React + Vite + Tailwind CSS |
+| Frontend | React 18 + Vite + Custom CSS |
 | Backend | Node.js + Express |
 | Database | PostgreSQL + Prisma ORM |
-| AI | GROQ API (llama-3.3-70b + llama-4-scout vision) |
+| AI | Groq API (llama-3.3-70b + llama-4-scout vision) |
 | Auth | JWT + Passport.js + Google OAuth |
-| Deployment | Vercel (frontend) + Render (backend + DB) |
-| i18n | i18next (EN / ES / JA / KO) |
+| Deployment | Vercel (frontend) + Railway (backend) + Supabase (DB) |
 
 ---
 
@@ -96,24 +94,26 @@ fitoglobe/
 └── README.md
 ```
 
+---
+
 ## Deployment
 
-| Service | Platform 
-|---------|----------
-| Frontend | Vercel 
-| Backend | Render 
-| Database | Render PostgreSQL
-
-**Note:** Free tier on Render spins down after inactivity — first request may take ~50 seconds.
+| Service | Platform |
+|---------|----------|
+| Frontend | Vercel |
+| Backend | Railway |
+| Database | Supabase (PostgreSQL) |
 
 ---
 
-## Environment Variables (Production)
+## Environment Variables
 
-**Render (Backend):**
+**Railway (Backend):**
 ```
 DATABASE_URL
+DIRECT_URL
 JWT_SECRET
+JWT_EXPIRES_IN=7d
 GROQ_API_KEY
 FRONTEND_URL
 GOOGLE_CLIENT_ID
@@ -125,7 +125,7 @@ PORT=5000
 
 **Vercel (Frontend):**
 ```
-VITE_API_URL=https://fitoglobe-backend.onrender.com
+VITE_API_URL=https://fitoglobe-production.up.railway.app
 ```
 
 ---
@@ -134,17 +134,17 @@ VITE_API_URL=https://fitoglobe-backend.onrender.com
 
 - [x] Core workout & nutrition tracking
 - [x] AI macro calculator
-- [x] Food scan via GROQ Vision
+- [x] Food scan via Groq Vision
 - [x] Fito Chat (AI fitness chatbot)
 - [x] Multilingual support (EN/ES/JA/KO)
 - [x] Google OAuth
+- [x] Migrated to Railway + Supabase (zero cold starts)
 - [ ] PWA support
 - [ ] Play Store deployment via Bubblewrap TWA
 - [ ] Voice meal logging
 
-
 ---
 
 <div align="center">
-  <sub>Built with ◆ by Ayush - India</sub>
+  <sub>Built by Ayush — India</sub>
 </div>
