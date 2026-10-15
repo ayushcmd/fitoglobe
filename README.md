@@ -64,7 +64,7 @@ Built with a mobile-first design, it supports 4 languages and auto-detects units
 | Database | PostgreSQL + Prisma ORM |
 | AI | Groq API (llama-3.3-70b + llama-4-scout vision) |
 | Auth | JWT + Passport.js + Google OAuth |
-| Deployment | Vercel (frontend) + Railway (backend) + Supabase (DB) |
+| Deployment | Vercel (frontend) + Render (backend) + Supabase (DB) |
 
 ---
 
@@ -105,14 +105,14 @@ fitoglobe/
 | Service | Platform |
 |---------|----------|
 | Frontend | Vercel |
-| Backend | Railway |
+| Backend | Render |
 | Database | Supabase (PostgreSQL) |
 
 ---
 
 ## Environment Variables
 
-**Railway (Backend):**
+**Render (Backend):**
 ```
 DATABASE_URL
 DIRECT_URL
@@ -129,7 +129,7 @@ PORT=5000
 
 **Vercel (Frontend):**
 ```
-VITE_API_URL=https://fitoglobe-production.up.railway.app
+VITE_API_URL=https://fitoglobe-backend-ko63.onrender.com
 ```
 
 ---
@@ -142,7 +142,7 @@ VITE_API_URL=https://fitoglobe-production.up.railway.app
 - [x] Fito Chat (AI fitness chatbot)
 - [x] Multilingual support (EN/ES/JA/KO)
 - [x] Google OAuth
-- [x] Migrated to Railway + Supabase (zero cold starts)
+- [x] Migrated to Render + Supabase (zero cold starts)
 
 
 ---

@@ -1,9 +1,12 @@
 import axios from "axios";
 
+const rawApiUrl = import.meta.env.VITE_API_URL || "https://fitoglobe-backend-ko63.onrender.com";
+const normalizedApiUrl = rawApiUrl.replace(/\/+$/, "");
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL
-    ? `${import.meta.env.VITE_API_URL}/api`
-    : "http://localhost:5000/api",
+  baseURL: normalizedApiUrl.endsWith("/api")
+    ? normalizedApiUrl
+    : `${normalizedApiUrl}/api`,
   headers: { "Content-Type": "application/json" },
 });
 

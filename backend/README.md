@@ -89,5 +89,7 @@ Authorization: Bearer <your_jwt_token>
 ## Google OAuth Setup
 1. Go to https://console.cloud.google.com
 2. Create project → Credentials → OAuth 2.0 Client IDs
-3. Add authorized redirect URI: `http://localhost:5000/api/auth/google/callback`
+3. Add authorized redirect URIs:
+   - Development: `http://localhost:5000/api/auth/google/callback`
+   - Production (Render): `https://fitoglobe-backend-ko63.onrender.com/api/auth/google/callback`
 4. Copy Client ID and Secret to .env
