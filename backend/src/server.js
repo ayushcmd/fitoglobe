@@ -69,7 +69,7 @@ app.get("/health", async (req, res) => {
   try {
     await Promise.race([
       prisma.$queryRaw`SELECT 1`,
-      new Promise((_, reject) => setTimeout(() => reject(new Error("Database ping timeout")), 2000)),
+      new Promise((_, reject) => setTimeout(() => reject(new Error("Database ping timeout")), 5000)),
     ]);
   } catch (err) {
     dbStatus = "disconnected";
