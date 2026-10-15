@@ -30,10 +30,25 @@ const checkGoogleConfigured = (req, res, next) => {
 
 const frontendBase = (process.env.FRONTEND_URL || "https://fitoglobe.vercel.app").replace(/\/$/, "");
 
-router.get("/google", checkGoogleConfigured, passport.authenticate("google", { scope:["profile","email"], session:false }));
+router.get("/google", checkGoogleConfigured, (req, res, next) => {
+  const callbackURL = passport.getGoogleCallbackURL ? passport.getGoogleCallbackURL() : process.env.GOOGLE_CALLBACK_URL;
+  passport.authenticate("google", {
+    scope: ["profile", "email"],
+    session: false,
+    callbackURL,
+  })(req, res, next);
+});
+
 router.get("/google/callback",
   checkGoogleConfigured,
-  passport.authenticate("google", { session:false, failureRedirect:`${frontendBase}/login?error=oauth` }),
+  (req, res, next) => {
+    const callbackURL = passport.getGoogleCallbackURL ? passport.getGoogleCallbackURL() : process.env.GOOGLE_CALLBACK_URL;
+    passport.authenticate("google", {
+      session: false,
+      callbackURL,
+      failureRedirect: `${frontendBase}/login?error=oauth`,
+    })(req, res, next);
+  },
   googleCallback
 );
 
