@@ -55,13 +55,18 @@ exports.login = async (req, res, next) => {
 
 // ── GET /api/auth/google/callback ────────────────────────
 exports.googleCallback = (req, res) => {
+  const frontendBase = (process.env.FRONTEND_URL || "https://fitoglobe.vercel.app").replace(/\/$/, "");
+
+  if (!req.user) {
+    return res.redirect(`${frontendBase}/auth/callback?error=oauth`);
+  }
+
   const token = signToken(req.user.id);
   const needsOnboarding = !req.user.country;
 
   // Deep link for Android APK
   const deepLink = `com.fitoglobe.app://oauth?token=${token}&onboarding=${needsOnboarding}`;
   // Web fallback
-  const frontendBase = (process.env.FRONTEND_URL || "https://fitoglobe.vercel.app").replace(/\/$/, "");
   const webLink = `${frontendBase}/auth/callback?token=${token}&onboarding=${needsOnboarding}`;
 
   // Detect if request came from Android WebView

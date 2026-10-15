@@ -153,10 +153,14 @@ const LanguageScreen = ({ onSelect }) => {
 };
 
 // ─── AUTH SCREEN ──────────────────────────────────────────
-const AuthScreen = ({ t, lang, onAuth }) => {
+const AuthScreen = ({ t, lang, onAuth, initialError = "" }) => {
   const [mode,setMode]=useState("login");
   const [name,setName]=useState(""); const [email,setEmail]=useState(""); const [pass,setPass]=useState(""); const [confirm,setConfirm]=useState("");
-  const [loading,setLoading]=useState(false); const [error,setError]=useState(""); const [success,setSuccess]=useState("");
+  const [loading,setLoading]=useState(false); const [error,setError]=useState(initialError); const [success,setSuccess]=useState("");
+
+  useEffect(() => {
+    if (initialError) setError(initialError);
+  }, [initialError]);
 
   const handle = async () => {
     setError(""); setLoading(true);
@@ -2487,63 +2491,108 @@ export default function FitoGlobe() {
   const stored = authService.getStoredUser();
   const token  = authService.getToken();
 
-const getInitialScreen = () => {
-    if (window.location.pathname === '/auth/callback') return "callback";
+  const getInitialScreen = () => {
+    const params = new URLSearchParams(window.location.search);
+    if (window.location.pathname === '/auth/callback' || params.has('token')) return "callback";
+    if (params.get('error') || window.location.pathname === '/login') return "auth";
     if (!token) return "language";
     if (stored && !stored.country) return "onboard";
     if (stored && stored.country) return "app";
-    return "language";
+    return "loading";
   };
 
-  const [screen,   setScreen]   = useState(getInitialScreen);
-  const [lang,     setLang]     = useState(stored?.language || "en");
-  const [user,     setUser]     = useState(stored);
-  const [page,     setPage]     = useState("dashboard");
-  const [radial,   setRadial]   = useState(false);
-  const [profOpen, setProfOpen] = useState(false);
+  const [screen,    setScreen]    = useState(getInitialScreen);
+  const [lang,      setLang]      = useState(() => stored?.language || localStorage.getItem("fitoglobe_lang") || "en");
+  const [user,      setUser]      = useState(stored);
+  const [authError, setAuthError] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("error") === "oauth") {
+      return "Google sign-in was cancelled or failed. Please try again.";
+    }
+    return "";
+  });
+  const [page,      setPage]      = useState("dashboard");
+  const [radial,    setRadial]    = useState(false);
+  const [profOpen,  setProfOpen]  = useState(false);
 
   const t = T[lang] || T.en;
 
-  // ✅ Google OAuth callback handler
+  // Hydrate user session if token exists but user profile is not cached yet
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const cbToken = params.get("token");
-    const onboarding = params.get("onboarding");
-    if (cbToken) {
-      localStorage.setItem("fitoglobe_token", cbToken);
-      window.history.replaceState({}, "", "/");
-      authService.getMe().then(u => {
-        if (u) {
-          setUser(u);
-          setScreen(onboarding === "true" ? "onboard" : "app");
-        }
-      });
+    if (screen === "loading") {
+      authService.getMe()
+        .then(u => {
+          if (u) {
+            setUser(u);
+            const preferredLang = localStorage.getItem("fitoglobe_lang") || u.language || "en";
+            setLang(preferredLang);
+            setScreen(u.country ? "app" : "onboard");
+          } else {
+            authService.logout();
+            setUser(null);
+            setScreen("language");
+          }
+        })
+        .catch(() => {
+          authService.logout();
+          setUser(null);
+          setScreen("language");
+        });
     }
-  }, []);
+  }, [screen]);
 
+  // Keep user profile fresh when inside the app
   useEffect(() => {
     if (screen === "app") {
       authService.getMe().then(u => { if(u) setUser(u); }).catch(()=>{});
     }
   }, [screen]);
 
-  const handleLang = (code) => { setLang(code); setScreen("auth"); };
+  const handleLang = (code) => {
+    localStorage.setItem("fitoglobe_lang", code);
+    setLang(code);
+    setScreen("auth");
+  };
+
   trackLoginStreak();
 
   const handleAuth = async () => {
     const fresh = await authService.getMe();
     setUser(fresh);
+    const preferredLang = localStorage.getItem("fitoglobe_lang") || fresh?.language || "en";
+    setLang(preferredLang);
     if (fresh && !fresh.country) setScreen("onboard");
     else setScreen("app");
   };
 
+  const handleAuthSuccess = (u, needsOnboard) => {
+    setUser(u);
+    const preferredLang = localStorage.getItem("fitoglobe_lang") || u?.language || "en";
+    setLang(preferredLang);
+    setAuthError("");
+    setScreen(needsOnboard ? "onboard" : "app");
+  };
+
+  const handleAuthError = (errMsg) => {
+    setUser(null);
+    setAuthError(errMsg);
+    setScreen("auth");
+  };
+
   const handleOnboard = async () => {
     const u = authService.getStoredUser();
-    setUser(u); setScreen("app");
+    setUser(u);
+    setScreen("app");
   };
 
   const handleLogout = () => {
-    authService.logout(); setUser(null); setScreen("language"); setProfOpen(false); setPage("dashboard");
+    authService.logout();
+    localStorage.removeItem("fitoglobe_lang");
+    setUser(null);
+    setAuthError("");
+    setScreen("language");
+    setProfOpen(false);
+    setPage("dashboard");
   };
 
   const pages = {
@@ -2569,9 +2618,17 @@ const getInitialScreen = () => {
     <div style={{ background:"#030308", minHeight:"100vh", display:"flex", justifyContent:"center" }}>
       <div style={{ fontFamily:"DM Sans, sans-serif", color:C.text, background:C.bg, minHeight:"100vh", width:"100%", maxWidth:430, position:"relative", overflow:"hidden" }}>
         <GlobalStyles/>
-        {screen==="callback" && <AuthCallback/>}
+        {screen==="loading"  && (
+          <div style={{ minHeight:"100vh", background:C.bg, display:"flex", alignItems:"center", justifyContent:"center" }}>
+            <div style={{ textAlign:"center" }}>
+              <div style={{ width:40, height:40, border:`3px solid ${C.limeDim}`, borderTopColor:C.lime, borderRadius:"50%", animation:"spin 0.8s linear infinite", margin:"0 auto 16px" }}/>
+              <div style={{ fontFamily:"Bebas Neue", fontSize:24, letterSpacing:1, color:C.text }}>Loading FitoGlobe...</div>
+            </div>
+          </div>
+        )}
+        {screen==="callback" && <AuthCallback onAuthSuccess={handleAuthSuccess} onAuthError={handleAuthError}/>}
         {screen==="language" && <LanguageScreen onSelect={handleLang}/>}
-        {screen==="auth"     && <AuthScreen t={t} lang={lang} onAuth={handleAuth}/>}
+        {screen==="auth"     && <AuthScreen t={t} lang={lang} onAuth={handleAuth} initialError={authError}/>}
         {screen==="onboard"  && <OnboardingScreen t={t} lang={lang} onDone={handleOnboard}/>}
         {screen==="app" && (
           <>
