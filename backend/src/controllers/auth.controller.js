@@ -6,7 +6,11 @@ const { sendPasswordReset, sendWelcome } = require("../services/email.service");
 
 // ── helpers ──────────────────────────────────────────────
 const signToken = (userId) =>
-  jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
+  jwt.sign(
+    { userId },
+    process.env.JWT_SECRET || "fitoglobe_fallback_secret",
+    { expiresIn: process.env.JWT_EXPIRES_IN || "7d" }
+  );
 
 const respond = (res, user, statusCode = 200) => {
   const token = signToken(user.id);
@@ -57,7 +61,8 @@ exports.googleCallback = (req, res) => {
   // Deep link for Android APK
   const deepLink = `com.fitoglobe.app://oauth?token=${token}&onboarding=${needsOnboarding}`;
   // Web fallback
-  const webLink = `${process.env.FRONTEND_URL}/auth/callback?token=${token}&onboarding=${needsOnboarding}`;
+  const frontendBase = (process.env.FRONTEND_URL || "https://fitoglobe.vercel.app").replace(/\/$/, "");
+  const webLink = `${frontendBase}/auth/callback?token=${token}&onboarding=${needsOnboarding}`;
 
   // Detect if request came from Android WebView
   const ua = req.headers['user-agent'] || '';

@@ -31,7 +31,7 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_ID !== "placeholde
           user = await prisma.user.create({
             data: {
               email,
-              name:       profile.displayName,
+              name:       profile.displayName || profile.name?.givenName || email.split("@")[0],
               googleId:   profile.id,
               avatar:     profile.photos?.[0]?.value,
               isVerified: true,
