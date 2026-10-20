@@ -328,41 +328,41 @@ const RadialMenu = ({ open, onClose, t, setPage, onProfile }) => {
   ];
   if (!open) return null;
   return (
-    <div onClick={onClose} style={{ position:"fixed", inset:0, background:"#07070ECC", backdropFilter:"blur(6px)", zIndex:100, display:"flex", alignItems:"flex-end", justifyContent:"center" }}>
-      <div onClick={e=>e.stopPropagation()} className="fade-up"
-        style={{ width:"100%", maxWidth:430, background:C.card, borderRadius:"20px 20px 0 0", border:`1px solid ${C.border}`, padding:"20px 16px 40px" }}>
+    <div onClick={onClose} className="modal-overlay">
+      <div onClick={e=>e.stopPropagation()} className="modal-sheet fade-up"
+        style={{ padding:"24px 20px 36px" }}>
         
         {/* Handle bar */}
         <div style={{ width:40, height:4, borderRadius:2, background:C.border, margin:"0 auto 20px" }}/>
         
         {/* Title */}
-        <div style={{ fontFamily:"Bebas Neue", fontSize:18, letterSpacing:1, color:C.sub, marginBottom:16, textAlign:"center" }}>QUICK ACTIONS</div>
+        <div style={{ fontFamily:"Bebas Neue", fontSize:20, letterSpacing:1, color:C.text, marginBottom:16, textAlign:"center" }}>QUICK ACTIONS</div>
 
         {/* Items grid — 3 per row */}
         <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:10 }}>
           {items.map((item, i) => (
             <div key={i} onClick={() => { if(item.page==="profile") { onProfile(); onClose(); } else { setPage(item.page); onClose(); } }} className="fade-up"
-              style={{ animationDelay:`${i*.05}s`, background:C.bg2, border:`1.5px solid ${item.color}30`, borderRadius:14, padding:"14px 8px", textAlign:"center", cursor:"pointer", transition:"all .2s" }}
+              style={{ animationDelay:`${i*.05}s`, background:C.bg2, border:`1.5px solid ${item.color}30`, borderRadius:14, padding:"16px 8px", textAlign:"center", cursor:"pointer", transition:"all .2s" }}
               onMouseEnter={e=>{e.currentTarget.style.background=item.color+"15";e.currentTarget.style.borderColor=item.color;}}
               onMouseLeave={e=>{e.currentTarget.style.background=C.bg2;e.currentTarget.style.borderColor=item.color+"30";}}>
-              <div style={{ fontSize:22, marginBottom:6 }}>{item.icon}</div>
-              <div style={{ fontSize:10, color:C.sub, fontWeight:700, lineHeight:1.3 }}>{item.label}</div>
+              <div style={{ fontSize:24, marginBottom:6 }}>{item.icon}</div>
+              <div style={{ fontSize:11, color:C.text, fontWeight:700, lineHeight:1.3 }}>{item.label}</div>
             </div>
           ))}
         </div>
 
         {/* Close */}
-        <div onClick={onClose} style={{ marginTop:16, textAlign:"center", color:C.muted, fontSize:13, fontWeight:600, cursor:"pointer", padding:"8px" }}>✕ Close</div>
+        <div onClick={onClose} style={{ marginTop:20, textAlign:"center", color:C.muted, fontSize:13, fontWeight:600, cursor:"pointer", padding:"8px" }}>✕ Close</div>
       </div>
     </div>
   );
 };
 
-// ─── BOTTOM NAV ───────────────────────────────────────────
+// ─── BOTTOM NAV (Mobile only) ─────────────────────────────
 const BottomNav = ({ page, setPage, t, onPlus }) => {
   const items = [{id:"dashboard",icon:"⬡",label:t.dashboard},{id:"workouts",icon:"◈",label:t.workouts},{id:"nutrition",icon:"◉",label:t.nutrition},{id:"progress",icon:"▣",label:t.progress}];
   return (
-    <nav style={{ position:"fixed", bottom:0, left:0, right:0, background:C.bg2, borderTop:`1px solid ${C.border}`, display:"flex", alignItems:"center", padding:"8px 0 12px", zIndex:50, maxWidth:430, margin:"0 auto" }}>
+    <nav style={{ position:"fixed", bottom:0, left:0, right:0, background:C.bg2, borderTop:`1px solid ${C.border}`, display:"flex", alignItems:"center", padding:"8px 0 12px", zIndex:50, maxWidth:500, margin:"0 auto" }}>
       {items.slice(0,2).map(it=>(
         <div key={it.id} onClick={()=>setPage(it.id)} style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", gap:3, cursor:"pointer" }}>
           <span style={{ fontSize:18, color:page===it.id?C.lime:C.muted }}>{it.icon}</span>
@@ -382,6 +382,281 @@ const BottomNav = ({ page, setPage, t, onPlus }) => {
     </nav>
   );
 };
+
+// ─── DESKTOP & TABLET SIDEBAR ──────────────────────────────
+const DesktopSidebar = ({ page, setPage, t, user, onProfile, onPlus, onLogout }) => {
+  const navItems = [
+    { id: "dashboard", icon: "⬡", label: t.dashboard || "Dashboard" },
+    { id: "workouts",  icon: "◈", label: t.workouts  || "Workouts" },
+    { id: "nutrition", icon: "◉", label: t.nutrition || "Nutrition" },
+    { id: "progress",  icon: "▣", label: t.progress  || "Progress" },
+    { id: "diet",      icon: "🥗", label: t.dietTitle || "Diet Plan" },
+    { id: "library",   icon: "📚", label: t.library   || "Library" },
+    { id: "ai",        icon: "🤖", label: t.ai        || "AI Coach" },
+    { id: "scan",      icon: "📷", label: t.scan      || "Scan Food" },
+    { id: "chat",      icon: "💬", label: "Fito Chat" },
+  ];
+
+  return (
+    <aside className="desktop-flex" style={{
+      width: 250,
+      background: C.bg2,
+      borderRight: `1px solid ${C.border}`,
+      flexDirection: "column",
+      height: "100vh",
+      position: "sticky",
+      top: 0,
+      zIndex: 50,
+      flexShrink: 0,
+      userSelect: "none"
+    }}>
+      {/* Brand Header */}
+      <div style={{ padding: "24px 20px 20px", display: "flex", alignItems: "center", gap: 12, borderBottom: `1px solid ${C.border}` }}>
+        <img src="/logo.png" alt="FitoGlobe" style={{ width: 38, height: 38, borderRadius: 10, flexShrink: 0 }} />
+        <div>
+          <div style={{ fontFamily: "Bebas Neue", fontSize: 24, letterSpacing: 2, color: C.text, lineHeight: 1 }}>
+            FITO<span style={{ color: C.lime }}>GLOBE</span>
+          </div>
+          <div style={{ fontFamily: "DM Mono", fontSize: 9, letterSpacing: ".2em", color: C.muted, marginTop: 2 }}>
+            GLOBAL FITNESS
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Action Button */}
+      <div style={{ padding: "16px 16px 8px" }}>
+        <button
+          onClick={onPlus}
+          style={{
+            width: "100%",
+            padding: "11px 14px",
+            background: C.lime,
+            color: "#000",
+            border: "none",
+            borderRadius: 10,
+            fontFamily: "DM Sans, sans-serif",
+            fontWeight: 800,
+            fontSize: 13,
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
+            boxShadow: `0 4px 14px ${C.lime}35`,
+            transition: "all .2s"
+          }}
+          onMouseEnter={e => e.currentTarget.style.transform = "translateY(-1px)"}
+          onMouseLeave={e => e.currentTarget.style.transform = "translateY(0)"}
+        >
+          <span style={{ fontSize: 16, lineHeight: 1 }}>+</span>
+          <span>Quick Action</span>
+        </button>
+      </div>
+
+      {/* Nav List */}
+      <div style={{ flex: 1, overflowY: "auto", padding: "8px 12px", display: "flex", flexDirection: "column", gap: 3 }}>
+        {navItems.map(item => {
+          const active = page === item.id;
+          return (
+            <div
+              key={item.id}
+              onClick={() => setPage(item.id)}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 12,
+                padding: "10px 14px",
+                borderRadius: 10,
+                cursor: "pointer",
+                transition: "all .18s",
+                background: active ? C.limeDim : "transparent",
+                color: active ? C.lime : C.sub,
+                fontWeight: active ? 700 : 500,
+                borderLeft: active ? `3px solid ${C.lime}` : "3px solid transparent",
+                fontSize: 14,
+              }}
+              onMouseEnter={e => {
+                if (!active) {
+                  e.currentTarget.style.background = "#141424";
+                  e.currentTarget.style.color = C.text;
+                }
+              }}
+              onMouseLeave={e => {
+                if (!active) {
+                  e.currentTarget.style.background = "transparent";
+                  e.currentTarget.style.color = C.sub;
+                }
+              }}
+            >
+              <span style={{ fontSize: 16, width: 22, textAlign: "center", color: active ? C.lime : C.muted }}>{item.icon}</span>
+              <span style={{ flex: 1 }}>{item.label}</span>
+              {active && <span style={{ width: 6, height: 6, borderRadius: "50%", background: C.lime }} />}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Bottom User Card */}
+      <div style={{ padding: "14px 16px", borderTop: `1px solid ${C.border}`, background: "#0A0A14" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div
+            onClick={onProfile}
+            style={{
+              width: 38,
+              height: 38,
+              borderRadius: "50%",
+              background: `linear-gradient(135deg, ${C.lime}, #8FFF00)`,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 16,
+              fontWeight: 900,
+              color: "#000",
+              fontFamily: "Bebas Neue",
+              cursor: "pointer",
+              flexShrink: 0
+            }}
+            title="Open Profile"
+          >
+            {(user?.name || "A")[0].toUpperCase()}
+          </div>
+          <div onClick={onProfile} style={{ flex: 1, minWidth: 0, cursor: "pointer" }}>
+            <div style={{ fontWeight: 700, fontSize: 13, color: C.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {user?.name || "Athlete"}
+            </div>
+            <div style={{ fontSize: 11, color: C.sub, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {user?.countryName || user?.country || "Fito Athlete"}
+            </div>
+          </div>
+          <div
+            onClick={onLogout}
+            title={t.logout || "Sign Out"}
+            style={{
+              width: 30,
+              height: 30,
+              borderRadius: 8,
+              background: "#FF505012",
+              border: "1px solid #FF505030",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "#FF5050",
+              fontSize: 13,
+              cursor: "pointer",
+              flexShrink: 0,
+              transition: "all .15s"
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = "#FF505025"}
+            onMouseLeave={e => e.currentTarget.style.background = "#FF505012"}
+          >
+            ⏻
+          </div>
+        </div>
+      </div>
+    </aside>
+  );
+};
+
+// ─── DESKTOP TOP BAR ──────────────────────────────────────
+const DesktopTopBar = ({ page, setPage, t, user, time, tz, onProfile }) => {
+  const pageTitles = {
+    dashboard: { title: t.dashboard || "Dashboard", subtitle: "Overview & Daily Goals" },
+    workouts:  { title: t.workouts  || "Workouts",  subtitle: "Exercise Logs & Sessions" },
+    nutrition: { title: t.nutrition || "Nutrition", subtitle: "Calorie Tracker & AI Macros" },
+    progress:  { title: t.progress  || "Progress",  subtitle: "Metrics, Heatmap & Badges" },
+    diet:      { title: t.dietTitle || "Diet Plan",  subtitle: "Personalized Regional Nutrition" },
+    library:   { title: "Exercise Library",         subtitle: "Movement Database & Techniques" },
+    ai:        { title: "AI Coach",                 subtitle: "Instant Fitness & Diet Guidance" },
+    scan:      { title: "Food Scanner",             subtitle: "Visual Macro & Calorie Estimation" },
+    chat:      { title: "Fito Chat",                subtitle: "Direct AI Fitness Assistant" },
+  };
+
+  const curr = pageTitles[page] || { title: page.toUpperCase(), subtitle: "FitoGlobe" };
+
+  const fmtTime = (d) => d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  const fmtDate = (d) => d.toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" });
+
+  return (
+    <header className="desktop-flex" style={{
+      position: "sticky",
+      top: 0,
+      zIndex: 40,
+      background: "rgba(7, 7, 14, 0.88)",
+      backdropFilter: "blur(12px)",
+      WebkitBackdropFilter: "blur(12px)",
+      borderBottom: `1px solid ${C.border}`,
+      padding: "14px 32px",
+      alignItems: "center",
+      justifyContent: "space-between",
+    }}>
+      {/* Page Title & Breadcrumb */}
+      <div>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <h1 style={{ fontFamily: "Bebas Neue", fontSize: 26, letterSpacing: 1, color: C.text, lineHeight: 1, margin: 0 }}>
+            {curr.title}
+          </h1>
+          <span style={{ fontSize: 11, color: C.muted, background: C.bg2, padding: "2px 8px", borderRadius: 12, border: `1px solid ${C.border}`, fontFamily: "DM Mono" }}>
+            LIVE
+          </span>
+        </div>
+        <p style={{ color: C.sub, fontSize: 12, marginTop: 2, margin: 0 }}>
+          {curr.subtitle}
+        </p>
+      </div>
+
+      {/* Clock, Timezone, Profile */}
+      <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, background: C.card, border: `1px solid ${C.border}`, padding: "6px 14px", borderRadius: 10 }}>
+          <span style={{ fontFamily: "DM Mono", fontSize: 14, fontWeight: 700, color: C.lime }}>
+            {fmtTime(time)}
+          </span>
+          <span style={{ fontSize: 10, color: C.muted, background: C.bg2, padding: "2px 6px", borderRadius: 6, border: `1px solid ${C.border}` }}>
+            {tz}
+          </span>
+          <span style={{ fontSize: 11, color: C.sub, borderLeft: `1px solid ${C.border}`, paddingLeft: 8 }}>
+            {fmtDate(time)}
+          </span>
+        </div>
+
+        <button
+          onClick={onProfile}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            background: C.card,
+            border: `1px solid ${C.borderHi}`,
+            borderRadius: 10,
+            padding: "6px 12px",
+            color: C.text,
+            cursor: "pointer",
+            transition: "all .15s",
+          }}
+          onMouseEnter={e => e.currentTarget.style.borderColor = C.lime}
+          onMouseLeave={e => e.currentTarget.style.borderColor = C.borderHi}
+        >
+          <div style={{
+            width: 24,
+            height: 24,
+            borderRadius: "50%",
+            background: `linear-gradient(135deg, ${C.lime}, #8FFF00)`,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: 12,
+            fontWeight: 900,
+            color: "#000",
+            fontFamily: "Bebas Neue"
+          }}>
+            {(user?.name || "A")[0].toUpperCase()}
+          </div>
+          <span style={{ fontSize: 12, fontWeight: 600 }}>{user?.name?.split(" ")[0] || "Profile"}</span>
+        </button>
+      </div>
+    </header>
+  );
+};
+
 
 // ─── DASHBOARD PAGE (real stats) ─────────────────────────
 const trackLoginStreak = () => {
@@ -531,114 +806,156 @@ const DashboardPage = ({ t, user }) => {
   const profileEmoji = localStorage.getItem("fitoglobe_emoji") || null;
 
   return (
-    <div className="fade-in" style={{ padding:"0 16px 100px" }}>
+    <div className="fade-in page-container">
 
       {/* ── HERO HEADER ─────────────────────────────── */}
-      <div style={{ padding:"20px 0 16px" }}>
+      <div style={{ padding:"16px 0 20px" }}>
         <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start" }}>
           <div>
-            <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:2 }}>
-              <span style={{ fontFamily:"DM Mono", fontSize:22, fontWeight:700, color:C.lime }}>{fmtTime(time)}</span>
-              <span style={{ fontSize:11, color:C.muted, background:C.bg2, padding:"2px 7px", borderRadius:20, border:`1px solid ${C.border}` }}>{tz}</span>
-            </div>
-            <div style={{ fontSize:12, color:C.sub }}>{fmtDate(time)}</div>
-          </div>
-          
-        </div>
-        <div style={{ marginTop:14 }}>
-          <p style={{ color:C.sub, fontSize:14, fontWeight:500, marginBottom:2 }}>{greeting},</p>
-          <h1 style={{ fontFamily:"Bebas Neue", fontSize:36, letterSpacing:1, color:C.text, lineHeight:1 }}>{user?.name||"Athlete"}</h1>
-          <p style={{ color:C.muted, fontSize:13, marginTop:6, fontStyle:"italic" }}>{motive}</p>
-        </div>
-      </div>
-
-      {/* ── STATS ROW ───────────────────────────────── */}
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 2fr", gap:8, marginBottom:16 }}>
-       
-         <LiquidStreakCard streak={streak} maxStreak={30} label={t.streak} />
-
-      {/* Mini Calendar card */}
-      <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:16, padding:"10px 12px" }}>
-       <div style={{ fontSize:11, fontWeight:700, color:C.sub, marginBottom:6 }}>
-         📅 {time.toLocaleString("default",{month:"short"})} {time.getFullYear()}
-       </div>
-       <div style={{ display:"grid", gridTemplateColumns:"repeat(7,1fr)", gap:2, textAlign:"center" }}>
-        {["M","T","W","T","F","S","S"].map((d,i)=>(
-          <div key={i} style={{ fontSize:8, color:C.muted, fontWeight:700, paddingBottom:3 }}>{d}</div>
-        ))}
-       {Array.from({length:(new Date(time.getFullYear(),time.getMonth(),1).getDay()||7)-1},(_,i)=>(
-         <div key={"e"+i}/>
-        ))}
-       {Array.from({length:new Date(time.getFullYear(),time.getMonth()+1,0).getDate()},(_,i)=>{
-        const day = i+1;
-        const isToday = day===time.getDate();
-        const dateStr = `${time.getFullYear()}-${String(time.getMonth()+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
-        const isLogged = loginDays.includes(dateStr);
-        return (
-          <div key={day} style={{ aspectRatio:1, borderRadius:4, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", fontSize:9, fontWeight:isToday?800:400, background:isToday?C.lime:isLogged?C.limeDim:"transparent", color:isToday?"#000":isLogged?C.lime:C.sub }}>
-            {day}
-            {workoutDates.includes(dateStr) && !isToday && (
-              <div style={{ width:3, height:3, borderRadius:"50%", background:C.lime, marginTop:1 }}/>
-            )}
-         </div>
-       );
-      })}
-    </div>
-  </div>
-</div>
-  
-      {/* ── TODAY'S GOAL ────────────────────────────── */}
-      <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:16, padding:20, marginBottom:16 }}>
-        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:16 }}>
-          <span style={{ fontWeight:700, fontSize:14 }}>{t.todayGoal}</span>
-          <span style={{ fontSize:11, color:C.sub, fontFamily:"DM Mono" }}>{Math.round(cal)} / {goal} kcal</span>
-        </div>
-        <div style={{ display:"flex", justifyContent:"space-around" }}>
-          {macros.map(m=><MacroRing key={m.label} value={m.value} max={m.max} color={m.color} label={m.label}/>)}
-        </div>
-      </div>
-
-      {/* ── WEEKLY PROGRESS (login-based) ───────────── */}
-      <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:16, padding:20, marginBottom:16 }}>
-        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
-          <span style={{ fontWeight:700, fontSize:14 }}>{t.weeklyProgress}</span>
-          <span style={{ fontSize:11, color:C.sub }}>{streak} day streak </span>
-        </div>
-        <div style={{ display:"flex", gap:8, justifyContent:"space-between" }}>
-          {weekDates.map((date,i) => {
-            const isActive = loginDays.includes(date);
-            const isToday  = date === new Date().toISOString().split("T")[0];
-            return (
-              <div key={i} style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", gap:6 }}>
-                <div style={{ width:"100%", aspectRatio:1, borderRadius:8, background:isActive?C.lime:C.border, display:"flex", alignItems:"center", justifyContent:"center", fontSize:12, color:"#000", fontWeight:800, border:isToday&&!isActive?`2px solid ${C.lime}`:undefined, transition:"all .3s" }}>
-                  {isActive?"✓":""}
-                </div>
-                <span style={{ fontSize:10, color:isToday?C.lime:C.sub, fontWeight:isToday?700:400 }}>{weekDays[i]}</span>
+            <div className="mobile-only" style={{ marginBottom:12 }}>
+              <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:2 }}>
+                <span style={{ fontFamily:"DM Mono", fontSize:22, fontWeight:700, color:C.lime }}>{fmtTime(time)}</span>
+                <span style={{ fontSize:11, color:C.muted, background:C.bg2, padding:"2px 7px", borderRadius:20, border:`1px solid ${C.border}` }}>{tz}</span>
               </div>
-            );
-          })}
+              <div style={{ fontSize:12, color:C.sub }}>{fmtDate(time)}</div>
+            </div>
+            <p style={{ color:C.sub, fontSize:14, fontWeight:500, marginBottom:2 }}>{greeting},</p>
+            <h1 style={{ fontFamily:"Bebas Neue", fontSize:36, letterSpacing:1, color:C.text, lineHeight:1 }}>{user?.name||"Athlete"}</h1>
+            <p style={{ color:C.muted, fontSize:13, marginTop:6, fontStyle:"italic" }}>{motive}</p>
+          </div>
         </div>
       </div>
 
-      {/* ── RECENT WORKOUTS ─────────────────────────── */}
-      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:10 }}>
-        <span style={{ fontWeight:700, fontSize:14 }}>{t.recentWorkout}</span>
-        <span style={{ fontSize:12, color:C.lime, fontWeight:600 }}>{t.viewAll}</span>
-      </div>
-      {sessions.length === 0
-        ? <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:14, padding:24, textAlign:"center", color:C.sub, fontSize:13 }}>
-            No workouts yet — log your first exercise! 
-          </div>
-        : sessions.slice(0,3).map(w=>(
-          <div key={w.id} style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:14, padding:"14px 16px", marginBottom:10, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-            <div>
-              <div style={{ fontWeight:700, fontSize:14 }}>{w.name}</div>
-              <div style={{ color:C.sub, fontSize:12, marginTop:2 }}>{w.exercises?.length||0} exercises · {w.durationMin||0} min</div>
+      {/* ── RESPONSIVE 2-COLUMN GRID ───────────────── */}
+      <div className="grid-2col">
+        {/* LEFT COLUMN: Goals & Workouts */}
+        <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
+          {/* TODAY'S GOAL */}
+          <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:16, padding:20 }}>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:16 }}>
+              <span style={{ fontWeight:700, fontSize:14 }}>{t.todayGoal}</span>
+              <span style={{ fontSize:11, color:C.sub, fontFamily:"DM Mono" }}>{Math.round(cal)} / {goal} kcal</span>
             </div>
-            <div style={{ fontFamily:"DM Mono", fontWeight:700, color:C.lime }}>{w.caloriesBurned||0} kcal</div>
+            <div style={{ display:"flex", justifyContent:"space-around" }}>
+              {macros.map(m=><MacroRing key={m.label} value={m.value} max={m.max} color={m.color} label={m.label}/>)}
+            </div>
           </div>
-        ))
-      }
+
+          {/* RECENT WORKOUTS */}
+          <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:16, padding:20 }}>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
+              <span style={{ fontWeight:700, fontSize:14 }}>{t.recentWorkout}</span>
+              <span onClick={()=>window.dispatchEvent(new CustomEvent("fitoglobe_navigate",{detail:"workouts"}))} style={{ fontSize:12, color:C.lime, fontWeight:600, cursor:"pointer" }}>{t.viewAll}</span>
+            </div>
+            {sessions.length === 0
+              ? <div style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:12, padding:24, textAlign:"center", color:C.sub, fontSize:13 }}>
+                  No workouts yet — log your first exercise! 
+                </div>
+              : sessions.slice(0,4).map(w=>(
+                <div key={w.id} style={{ background:C.bg2, border:`1px solid ${C.border}`, borderRadius:12, padding:"12px 14px", marginBottom:8, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                  <div>
+                    <div style={{ fontWeight:700, fontSize:14 }}>{w.name}</div>
+                    <div style={{ color:C.sub, fontSize:12, marginTop:2 }}>{w.exercises?.length||0} exercises · {w.durationMin||0} min</div>
+                  </div>
+                  <div style={{ fontFamily:"DM Mono", fontWeight:700, color:C.lime }}>{w.caloriesBurned||0} kcal</div>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+
+        {/* RIGHT COLUMN: Streak, Calendar, Weekly Progress, Quick Shortcuts */}
+        <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
+          {/* STATS ROW: LiquidStreakCard + Mini Calendar */}
+          <div style={{ display:"grid", gridTemplateColumns:"1fr 2fr", gap:8 }}>
+            <LiquidStreakCard streak={streak} maxStreak={30} label={t.streak} />
+
+            {/* Mini Calendar card */}
+            <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:16, padding:"10px 12px" }}>
+              <div style={{ fontSize:11, fontWeight:700, color:C.sub, marginBottom:6 }}>
+                📅 {time.toLocaleString("default",{month:"short"})} {time.getFullYear()}
+              </div>
+              <div style={{ display:"grid", gridTemplateColumns:"repeat(7,1fr)", gap:2, textAlign:"center" }}>
+                {["M","T","W","T","F","S","S"].map((d,i)=>(
+                  <div key={i} style={{ fontSize:8, color:C.muted, fontWeight:700, paddingBottom:3 }}>{d}</div>
+                ))}
+                {Array.from({length:(new Date(time.getFullYear(),time.getMonth(),1).getDay()||7)-1},(_,i)=>(
+                  <div key={"e"+i}/>
+                ))}
+                {Array.from({length:new Date(time.getFullYear(),time.getMonth()+1,0).getDate()},(_,i)=>{
+                  const day = i+1;
+                  const isToday = day===time.getDate();
+                  const dateStr = `${time.getFullYear()}-${String(time.getMonth()+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+                  const isLogged = loginDays.includes(dateStr);
+                  return (
+                    <div key={day} style={{ aspectRatio:1, borderRadius:4, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", fontSize:9, fontWeight:isToday?800:400, background:isToday?C.lime:isLogged?C.limeDim:"transparent", color:isToday?"#000":isLogged?C.lime:C.sub }}>
+                      {day}
+                      {workoutDates.includes(dateStr) && !isToday && (
+                        <div style={{ width:3, height:3, borderRadius:"50%", background:C.lime, marginTop:1 }}/>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* WEEKLY PROGRESS */}
+          <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:16, padding:20 }}>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
+              <span style={{ fontWeight:700, fontSize:14 }}>{t.weeklyProgress}</span>
+              <span style={{ fontSize:11, color:C.sub }}>{streak} day streak 🔥</span>
+            </div>
+            <div style={{ display:"flex", gap:8, justifyContent:"space-between" }}>
+              {weekDates.map((date,i) => {
+                const isActive = loginDays.includes(date);
+                const isToday  = date === new Date().toISOString().split("T")[0];
+                return (
+                  <div key={i} style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", gap:6 }}>
+                    <div style={{ width:"100%", aspectRatio:1, borderRadius:8, background:isActive?C.lime:C.border, display:"flex", alignItems:"center", justifyContent:"center", fontSize:12, color:"#000", fontWeight:800, border:isToday&&!isActive?`2px solid ${C.lime}`:undefined, transition:"all .3s" }}>
+                      {isActive?"✓":""}
+                    </div>
+                    <span style={{ fontSize:10, color:isToday?C.lime:C.sub, fontWeight:isToday?700:400 }}>{weekDays[i]}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* QUICK SHORTCUTS (Desktop/Tablet) */}
+          <div className="desktop-only" style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:16, padding:18 }}>
+            <div style={{ fontWeight:700, fontSize:12, color:C.sub, marginBottom:10, letterSpacing:".08em", textTransform:"uppercase" }}>
+              Quick Navigation
+            </div>
+            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:8 }}>
+              {[
+                { label: t.dietTitle||"Diet Plan", icon: "🥗", page: "diet" },
+                { label: t.ai||"AI Coach", icon: "🤖", page: "ai" },
+                { label: t.scan||"Scan Food", icon: "📷", page: "scan" },
+              ].map(q => (
+                <div
+                  key={q.page}
+                  onClick={() => window.dispatchEvent(new CustomEvent("fitoglobe_navigate", { detail: q.page }))}
+                  style={{
+                    padding: "12px 8px",
+                    background: C.bg2,
+                    border: `1px solid ${C.border}`,
+                    borderRadius: 10,
+                    textAlign: "center",
+                    cursor: "pointer",
+                    transition: "all .15s"
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = C.lime; e.currentTarget.style.background = C.limeDim; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.background = C.bg2; }}
+                >
+                  <div style={{ fontSize:20, marginBottom:4 }}>{q.icon}</div>
+                  <div style={{ fontSize:11, fontWeight:700, color:C.text }}>{q.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
@@ -740,9 +1057,9 @@ const AddExercisePopup = ({ exercise, onSave, onClose }) => {
   const color = muscleColors[exercise.muscleGroup] || C.lime;
 
   return (
-    <div onClick={onClose} style={{ position:"fixed", inset:0, background:"#07070ECC", backdropFilter:"blur(6px)", zIndex:200, display:"flex", alignItems:"flex-end", justifyContent:"center" }}>
-      <div onClick={e=>e.stopPropagation()} className="fade-up"
-        style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:"20px 20px 0 0", padding:20, width:"100%", maxWidth:430, boxSizing:"border-box", paddingBottom:80 }}>
+    <div onClick={onClose} className="modal-overlay">
+      <div onClick={e=>e.stopPropagation()} className="modal-sheet fade-up"
+        style={{ padding:24 }}>
         <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:18 }}>
           <div style={{ width:44, height:44, borderRadius:12, background:color+"20", display:"flex", alignItems:"center", justifyContent:"center", fontSize:20, flexShrink:0 }}>
             {exercise.muscleGroup==="chest"?"💪":exercise.muscleGroup==="legs"?"🦵":exercise.muscleGroup==="back"?"🔙":exercise.muscleGroup==="shoulders"?"🏋️":exercise.muscleGroup==="arms"?"💪":exercise.muscleGroup==="core"?"⭕":"🏃"}
@@ -860,7 +1177,7 @@ const WorkoutPage = ({ t }) => {
 
   // ── LIBRARY VIEW ─────────────────────────────────────
   if (showLib) return (
-    <div className="fade-in" style={{ padding:"20px 16px 100px" }}>
+    <div className="fade-in page-container">
       <Toast msg={toast}/>
       {popup && <AddExercisePopup exercise={popup} onSave={(sets,reps)=>saveExercise(popup,sets,reps)} onClose={()=>setPopup(null)}/>}
 
@@ -891,7 +1208,7 @@ const WorkoutPage = ({ t }) => {
           No exercises found
         </div>
       ) : (
-        <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+        <div className="cards-grid-auto">
           {filteredEx.map(ex => {
             const color = muscleColors[ex.muscleGroup]||C.lime;
             const cal = Math.round((ex.caloriesPerMin||5) * 3 * 2.5);
@@ -922,7 +1239,7 @@ const WorkoutPage = ({ t }) => {
 
   // ── DEFAULT VIEW ─────────────────────────────────────
   return (
-    <div className="fade-in" style={{ padding:"20px 16px 100px" }}>
+    <div className="fade-in page-container">
       <Toast msg={toast}/>
 
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
@@ -955,31 +1272,33 @@ const WorkoutPage = ({ t }) => {
             </div>
           </div>
 
-          {sessions.map(s => {
-            const ex = s.exercises?.[0];
-            const muscle = ex?.exercise?.muscleGroup;
-            const color = muscleColors[muscle]||C.lime;
-            return (
-              <div key={s.id} style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:14, padding:"14px 16px", marginBottom:10 }}>
-                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start" }}>
-                  <div style={{ flex:1 }}>
-                    {muscle && <span style={{ fontSize:10, fontWeight:700, color, background:color+"18", padding:"2px 8px", borderRadius:20, display:"inline-block", marginBottom:6 }}>{muscle}</span>}
-                    <div style={{ fontWeight:800, fontSize:15 }}>{s.name}</div>
-                    <div style={{ display:"flex", gap:12, marginTop:2 }}>
-                      {ex && <span style={{ color:C.sub, fontSize:12 }}>{ex.sets} sets × {ex.reps} reps</span>}
-                      {s.caloriesBurned > 0 && <span style={{ color:C.lime, fontSize:12, fontFamily:"DM Mono", fontWeight:700 }}>{s.caloriesBurned} kcal</span>}
+          <div className="cards-grid-auto">
+            {sessions.map(s => {
+              const ex = s.exercises?.[0];
+              const muscle = ex?.exercise?.muscleGroup;
+              const color = muscleColors[muscle]||C.lime;
+              return (
+                <div key={s.id} style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:14, padding:"14px 16px" }}>
+                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start" }}>
+                    <div style={{ flex:1 }}>
+                      {muscle && <span style={{ fontSize:10, fontWeight:700, color, background:color+"18", padding:"2px 8px", borderRadius:20, display:"inline-block", marginBottom:6 }}>{muscle}</span>}
+                      <div style={{ fontWeight:800, fontSize:15 }}>{s.name}</div>
+                      <div style={{ display:"flex", gap:12, marginTop:2 }}>
+                        {ex && <span style={{ color:C.sub, fontSize:12 }}>{ex.sets} sets × {ex.reps} reps</span>}
+                        {s.caloriesBurned > 0 && <span style={{ color:C.lime, fontSize:12, fontFamily:"DM Mono", fontWeight:700 }}>{s.caloriesBurned} kcal</span>}
+                      </div>
+                      <div style={{ color:C.muted, fontSize:11, marginTop:2 }}>{new Date(s.completedAt).toLocaleDateString()}</div>
                     </div>
-                    <div style={{ color:C.muted, fontSize:11, marginTop:2 }}>{new Date(s.completedAt).toLocaleDateString()}</div>
+                    <div onClick={()=>deleteSession(s.id)}
+                      style={{ fontSize:11, color:"#FF5050", cursor:"pointer", fontWeight:700, padding:"5px 10px", border:"1px solid #FF505030", borderRadius:20, background:"#FF505010", flexShrink:0, marginLeft:10 }}>
+                      🗑
+                    </div>
                   </div>
-                  <div onClick={()=>deleteSession(s.id)}
-                    style={{ fontSize:11, color:"#FF5050", cursor:"pointer", fontWeight:700, padding:"5px 10px", border:"1px solid #FF505030", borderRadius:20, background:"#FF505010", flexShrink:0, marginLeft:10 }}>
-                    🗑
-                  </div>
+                  <ExerciseStopwatch label={s.name}/>
                 </div>
-                <ExerciseStopwatch label={s.name}/>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </>
       )}
     </div>
@@ -1100,7 +1419,7 @@ const NutritionPage = ({ t }) => {
   const mealColors = { breakfast:C.orange, lunch:C.lime, dinner:C.blue, snack:C.pink };
 
   return (
-    <div className="fade-in" style={{ padding:"20px 16px 100px" }}>
+    <div className="fade-in page-container">
       {toast && (
         <div style={{ position:"fixed", top:20, left:"50%", transform:"translateX(-50%)", background:toastType==="error"?C.orange:C.lime, color:"#000", padding:"10px 20px", borderRadius:10, fontWeight:700, fontSize:13, zIndex:999, animation:"fadeUp .3s ease" }}>
           {toast}
@@ -1264,11 +1583,12 @@ const NutritionPage = ({ t }) => {
           </div>
 
           {/* MEAL SECTIONS */}
+          <div className="meals-grid-2x2">
           {mealTypes.map(type => {
             const items = data?.grouped?.[type] || [];
             const mealCal = items.reduce((sum, i) => sum + (i.calories||0), 0);
             return (
-              <div key={type} style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:16, padding:16, marginBottom:10 }}>
+              <div key={type} style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:16, padding:16, marginBottom:0 }}>
                 <div onClick={() => setExpanded(p => ({...p, [type]:!p[type]}))}
   style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:expanded[type]&&items.length>0?12:0, cursor:"pointer" }}>
   <div style={{ display:"flex", alignItems:"center", gap:8 }}>
@@ -1314,6 +1634,7 @@ const NutritionPage = ({ t }) => {
               </div>
             );
           })}
+          </div>
         </>
       )}
     </div>
@@ -1451,7 +1772,7 @@ const ProgressPage = ({ t, user }) => {
   ];
 
   return (
-    <div className="fade-in" style={{ padding:"20px 16px 100px" }}>
+    <div className="fade-in page-container">
       {toast && (
         <div style={{ position:"fixed", top:20, left:"50%", transform:"translateX(-50%)", background:C.lime, color:"#000", padding:"10px 20px", borderRadius:10, fontWeight:700, fontSize:13, zIndex:999, animation:"fadeUp .3s ease" }}>
           {toast}
@@ -1478,7 +1799,7 @@ const ProgressPage = ({ t, user }) => {
       {activeTab === "overview" && (
         <>
           {/* STATS ROW */}
-          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:8, marginBottom:14 }}>
+          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:8, marginBottom:16 }}>
             {[
               { icon:"↑", val:`${streak}d`,        sub:"Streak"   },
               { icon:"▲", val:`${sessions.length}`, sub:"Workouts" },
@@ -1492,35 +1813,94 @@ const ProgressPage = ({ t, user }) => {
             ))}
           </div>
 
-          {/* WEIGHT CARDS */}
-          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10, marginBottom:14 }}>
-            {/* Current Weight */}
-            <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:16, padding:16, textAlign:"center" }}>
-              <div style={{ fontSize:11, fontWeight:700, color:C.sub, textTransform:"uppercase", letterSpacing:".08em", marginBottom:8 }}>Current Weight</div>
-              <div style={{ fontFamily:"DM Mono", fontSize:28, fontWeight:900, color:C.text }}>{currentWeight}</div>
-              <div style={{ fontSize:11, color:C.muted, marginTop:2 }}>kg</div>
-              <div style={{ marginTop:8, fontSize:10, color:C.sub }}>From your profile</div>
+          <div className="grid-2col">
+            {/* LEFT COLUMN: Weight Cards & Goal Setting */}
+            <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10 }}>
+                {/* Current Weight */}
+                <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:16, padding:16, textAlign:"center" }}>
+                  <div style={{ fontSize:11, fontWeight:700, color:C.sub, textTransform:"uppercase", letterSpacing:".08em", marginBottom:8 }}>Current Weight</div>
+                  <div style={{ fontFamily:"DM Mono", fontSize:28, fontWeight:900, color:C.text }}>{currentWeight}</div>
+                  <div style={{ fontSize:11, color:C.muted, marginTop:2 }}>kg</div>
+                  <div style={{ marginTop:8, fontSize:10, color:C.sub }}>From your profile</div>
+                </div>
+
+                {/* Target Weight */}
+                <div style={{ background:C.card, border:`1.5px solid ${targetWeight?C.lime+"40":C.border}`, borderRadius:16, padding:16, textAlign:"center", cursor:"pointer" }}
+                  onClick={() => { setTempTarget(targetWeight); setEditTarget(true); }}>
+                  <div style={{ fontSize:11, fontWeight:700, color:C.sub, textTransform:"uppercase", letterSpacing:".08em", marginBottom:8 }}>Target Weight</div>
+                  {targetWeight
+                    ? <div style={{ fontFamily:"DM Mono", fontSize:28, fontWeight:900, color:C.lime }}>{targetWeight}</div>
+                    : <div style={{ fontSize:28, marginBottom:2 }}>🎯</div>
+                  }
+                  <div style={{ fontSize:11, color:targetWeight?C.muted:C.sub, marginTop:2 }}>{targetWeight?"kg":"Tap to set"}</div>
+                  <div style={{ marginTop:8, fontSize:10, color:C.lime, fontWeight:700 }}>{targetWeight?"✏️ Edit":"+ Set Goal"}</div>
+                </div>
+              </div>
+
+              {!targetWeight && (
+                <div style={{ background:C.limeDim, border:`1px solid ${C.lime}30`, borderRadius:14, padding:16, textAlign:"center" }}>
+                  <div style={{ fontSize:13, color:C.lime, fontWeight:700 }}> Set a target weight to see your goal BMI!</div>
+                  <div onClick={() => { setTempTarget(""); setEditTarget(true); }}
+                    style={{ marginTop:8, display:"inline-block", background:C.lime, color:"#000", fontWeight:800, fontSize:12, padding:"7px 18px", borderRadius:20, cursor:"pointer" }}>
+                    Set Target
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* Target Weight */}
-            <div style={{ background:C.card, border:`1.5px solid ${targetWeight?C.lime+"40":C.border}`, borderRadius:16, padding:16, textAlign:"center", cursor:"pointer" }}
-              onClick={() => { setTempTarget(targetWeight); setEditTarget(true); }}>
-              <div style={{ fontSize:11, fontWeight:700, color:C.sub, textTransform:"uppercase", letterSpacing:".08em", marginBottom:8 }}>Target Weight</div>
-              {targetWeight
-                ? <div style={{ fontFamily:"DM Mono", fontSize:28, fontWeight:900, color:C.lime }}>{targetWeight}</div>
-                : <div style={{ fontSize:28, marginBottom:2 }}></div>
-              }
-              <div style={{ fontSize:11, color:targetWeight?C.muted:C.sub, marginTop:2 }}>{targetWeight?"kg":"Tap to set"}</div>
-              <div style={{ marginTop:8, fontSize:10, color:C.lime, fontWeight:700 }}>{targetWeight?"✏️ Edit":"+ Set Goal"}</div>
+            {/* RIGHT COLUMN: BMI Cards */}
+            <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+              {/* BMI — CURRENT */}
+              <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:16, padding:18 }}>
+                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
+                  <div style={{ fontWeight:800, fontSize:14 }}> Current BMI</div>
+                  <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                    <span style={{ fontFamily:"DM Mono", fontSize:20, fontWeight:900, color:getBMIColor(currentBMI) }}>{currentBMI}</span>
+                    <span style={{ fontSize:11, fontWeight:700, color:getBMIColor(currentBMI), background:getBMIColor(currentBMI)+"20", padding:"2px 8px", borderRadius:20 }}>{getBMILabel(currentBMI)}</span>
+                  </div>
+                </div>
+                <div style={{ position:"relative", height:10, borderRadius:6, overflow:"hidden", background:`linear-gradient(90deg, ${C.blue} 0%, ${C.lime} 35%, ${C.lime} 65%, ${C.orange} 80%, #FF4444 100%)` }}>
+                  <div style={{ position:"absolute", top:-2, left:`${getBMIPct(currentBMI)}%`, transform:"translateX(-50%)", width:14, height:14, borderRadius:"50%", background:"#fff", border:`3px solid ${getBMIColor(currentBMI)}`, transition:"left .8s ease" }}/>
+                </div>
+                <div style={{ display:"flex", justifyContent:"space-between", marginTop:6, fontSize:9, color:C.muted, fontWeight:600 }}>
+                  <span>Underweight</span><span>Normal</span><span>Overweight</span><span>Obese</span>
+                </div>
+              </div>
+
+              {/* BMI — TARGET */}
+              {targetBMI && (
+                <div style={{ background:C.card, border:`1px solid ${C.lime}30`, borderRadius:16, padding:18 }}>
+                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
+                    <div style={{ fontWeight:800, fontSize:14 }}> Target BMI</div>
+                    <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                      <span style={{ fontFamily:"DM Mono", fontSize:20, fontWeight:900, color:getBMIColor(targetBMI) }}>{targetBMI}</span>
+                      <span style={{ fontSize:11, fontWeight:700, color:getBMIColor(targetBMI), background:getBMIColor(targetBMI)+"20", padding:"2px 8px", borderRadius:20 }}>{getBMILabel(targetBMI)}</span>
+                    </div>
+                  </div>
+                  <div style={{ position:"relative", height:10, borderRadius:6, overflow:"hidden", background:`linear-gradient(90deg, ${C.blue} 0%, ${C.lime} 35%, ${C.lime} 65%, ${C.orange} 80%, #FF4444 100%)` }}>
+                    <div style={{ position:"absolute", top:-2, left:`${getBMIPct(targetBMI)}%`, transform:"translateX(-50%)", width:14, height:14, borderRadius:"50%", background:"#fff", border:`3px solid ${getBMIColor(targetBMI)}`, transition:"left .8s ease" }}/>
+                  </div>
+                  <div style={{ display:"flex", justifyContent:"space-between", marginTop:6, fontSize:9, color:C.muted, fontWeight:600 }}>
+                    <span>Underweight</span><span>Normal</span><span>Overweight</span><span>Obese</span>
+                  </div>
+                  <div style={{ marginTop:12, padding:"10px 12px", background:C.bg2, borderRadius:10, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                    <div style={{ fontSize:12, color:C.sub }}>BMI Change</div>
+                    <div style={{ fontSize:13, fontWeight:800, color:targetBMI < currentBMI ? C.lime : C.orange }}>
+                      {targetBMI < currentBMI ? "▼" : "▲"} {Math.abs((targetBMI - currentBMI).toFixed(1))} points
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
           {/* TARGET WEIGHT POPUP */}
           {editTarget && (
-            <div onClick={() => setEditTarget(false)} style={{ position:"fixed", inset:0, background:"#07070ECC", backdropFilter:"blur(6px)", zIndex:200, display:"flex", alignItems:"center", justifyContent:"center", padding:24 }}>
-              <div onClick={e => e.stopPropagation()} className="fade-up"
-                style={{ background:C.card, border:`1px solid ${C.lime}40`, borderRadius:20, padding:24, width:"100%", maxWidth:340 }}>
-                <div style={{ fontWeight:800, fontSize:16, marginBottom:4 }}> Set Target Weight</div>
+            <div onClick={() => setEditTarget(false)} className="modal-overlay">
+              <div onClick={e => e.stopPropagation()} className="modal-sheet fade-up"
+                style={{ padding:24, maxWidth:380 }}>
+                <div style={{ fontWeight:800, fontSize:16, marginBottom:4 }}>🎯 Set Target Weight</div>
                 <div style={{ fontSize:12, color:C.sub, marginBottom:16 }}>Current: {currentWeight}kg · Height: {height}cm</div>
                 <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:16 }}>
                   <input type="number" value={tempTarget} onChange={e => setTempTarget(e.target.value)}
@@ -1557,58 +1937,6 @@ const ProgressPage = ({ t, user }) => {
                     Save
                   </button>
                 </div>
-              </div>
-            </div>
-          )}
-
-          {/* BMI — CURRENT */}
-          <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:16, padding:18, marginBottom:10 }}>
-            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
-              <div style={{ fontWeight:800, fontSize:14 }}> Current BMI</div>
-              <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-                <span style={{ fontFamily:"DM Mono", fontSize:20, fontWeight:900, color:getBMIColor(currentBMI) }}>{currentBMI}</span>
-                <span style={{ fontSize:11, fontWeight:700, color:getBMIColor(currentBMI), background:getBMIColor(currentBMI)+"20", padding:"2px 8px", borderRadius:20 }}>{getBMILabel(currentBMI)}</span>
-              </div>
-            </div>
-            <div style={{ position:"relative", height:10, borderRadius:6, overflow:"hidden", background:`linear-gradient(90deg, ${C.blue} 0%, ${C.lime} 35%, ${C.lime} 65%, ${C.orange} 80%, #FF4444 100%)` }}>
-              <div style={{ position:"absolute", top:-2, left:`${getBMIPct(currentBMI)}%`, transform:"translateX(-50%)", width:14, height:14, borderRadius:"50%", background:"#fff", border:`3px solid ${getBMIColor(currentBMI)}`, transition:"left .8s ease" }}/>
-            </div>
-            <div style={{ display:"flex", justifyContent:"space-between", marginTop:6, fontSize:9, color:C.muted, fontWeight:600 }}>
-              <span>Underweight</span><span>Normal</span><span>Overweight</span><span>Obese</span>
-            </div>
-          </div>
-
-          {/* BMI — TARGET */}
-          {targetBMI && (
-            <div style={{ background:C.card, border:`1px solid ${C.lime}30`, borderRadius:16, padding:18, marginBottom:14 }}>
-              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
-                <div style={{ fontWeight:800, fontSize:14 }}> Target BMI</div>
-                <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-                  <span style={{ fontFamily:"DM Mono", fontSize:20, fontWeight:900, color:getBMIColor(targetBMI) }}>{targetBMI}</span>
-                  <span style={{ fontSize:11, fontWeight:700, color:getBMIColor(targetBMI), background:getBMIColor(targetBMI)+"20", padding:"2px 8px", borderRadius:20 }}>{getBMILabel(targetBMI)}</span>
-                </div>
-              </div>
-              <div style={{ position:"relative", height:10, borderRadius:6, overflow:"hidden", background:`linear-gradient(90deg, ${C.blue} 0%, ${C.lime} 35%, ${C.lime} 65%, ${C.orange} 80%, #FF4444 100%)` }}>
-                <div style={{ position:"absolute", top:-2, left:`${getBMIPct(targetBMI)}%`, transform:"translateX(-50%)", width:14, height:14, borderRadius:"50%", background:"#fff", border:`3px solid ${getBMIColor(targetBMI)}`, transition:"left .8s ease" }}/>
-              </div>
-              <div style={{ display:"flex", justifyContent:"space-between", marginTop:6, fontSize:9, color:C.muted, fontWeight:600 }}>
-                <span>Underweight</span><span>Normal</span><span>Overweight</span><span>Obese</span>
-              </div>
-              <div style={{ marginTop:12, padding:"10px 12px", background:C.bg2, borderRadius:10, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-                <div style={{ fontSize:12, color:C.sub }}>BMI Change</div>
-                <div style={{ fontSize:13, fontWeight:800, color:targetBMI < currentBMI ? C.lime : C.orange }}>
-                  {targetBMI < currentBMI ? "▼" : "▲"} {Math.abs((targetBMI - currentBMI).toFixed(1))} points
-                </div>
-              </div>
-            </div>
-          )}
-
-          {!targetWeight && (
-            <div style={{ background:C.limeDim, border:`1px solid ${C.lime}30`, borderRadius:14, padding:16, textAlign:"center", marginBottom:14 }}>
-              <div style={{ fontSize:13, color:C.lime, fontWeight:700 }}> Set a target weight to see your goal BMI!</div>
-              <div onClick={() => { setTempTarget(""); setEditTarget(true); }}
-                style={{ marginTop:8, display:"inline-block", background:C.lime, color:"#000", fontWeight:800, fontSize:12, padding:"7px 18px", borderRadius:20, cursor:"pointer" }}>
-                Set Target
               </div>
             </div>
           )}
@@ -1713,7 +2041,7 @@ const ProgressPage = ({ t, user }) => {
               </div>
             </div>
           </div>
-          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10 }}>
+          <div className="badges-grid-responsive">
             {allBadges.map(badge => (
               <div key={badge.id}
                 style={{ background:badge.unlocked?C.card:C.bg2, border:`1.5px solid ${badge.unlocked?C.lime+"40":C.border}`, borderRadius:14, padding:16, opacity:badge.unlocked?1:.5, position:"relative" }}>
@@ -1775,14 +2103,14 @@ const LibraryPage = ({ t, lang }) => {
   },[filter,search,lang]);
 
   return (
-    <div className="fade-in" style={{ padding:"20px 16px 100px" }}>
+    <div className="fade-in page-container">
       <h1 style={{ fontFamily:"Bebas Neue", fontSize:34, letterSpacing:1, color:C.text, marginBottom:16 }}>{t.library}</h1>
       <Input value={search} onChange={setSearch} placeholder={t.search} icon="◈"/>
       <div style={{ display:"flex", gap:6, overflowX:"auto", marginBottom:16, paddingBottom:4 }}>
         {groups.map(g=><div key={g} onClick={()=>setFilter(g)} style={{ padding:"7px 14px", borderRadius:20, border:`1.5px solid ${filter===g?C.lime:C.border}`, background:filter===g?C.limeDim:C.card, cursor:"pointer", whiteSpace:"nowrap", fontSize:12, fontWeight:700, color:filter===g?C.lime:C.sub, transition:"all .18s" }}>{groupT[g]}</div>)}
       </div>
       {loading ? <Spinner/> : (
-        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10 }}>
+        <div className="cards-grid-auto">
           {exercises.map(ex=>(
             <Card key={ex.id} style={{ padding:16 }}>
               <div style={{ display:"flex", justifyContent:"space-between", marginBottom:8 }}>
@@ -1813,12 +2141,13 @@ const DietPage = ({ t, user }) => {
   const plan = DIET_PLANS[dietKey] || DIET_PLANS.mediterranean;
   const sections=[{label:t.breakfast,items:plan.breakfast,icon:"◈",color:C.orange,kcal:480},{label:t.lunch,items:plan.lunch,icon:"◉",color:C.lime,kcal:650},{label:t.dinner,items:plan.dinner,icon:"◆",color:C.blue,kcal:580},{label:t.snacks,items:plan.snacks,icon:"▲",color:C.pink,kcal:220}];
   return (
-    <div className="fade-in" style={{ padding:"20px 16px 100px" }}>
+    <div className="fade-in page-container">
       <h1 style={{ fontFamily:"Bebas Neue", fontSize:34, letterSpacing:1, color:C.text, marginBottom:4 }}>{t.dietTitle}</h1>
       <p style={{ color:C.sub, fontSize:13, marginBottom:16 }}>{t.dietSub}</p>
       {user?.countryName && <Card style={{ marginBottom:16, display:"flex", alignItems:"center", gap:12, background:C.limeDim, border:`1px solid ${C.lime}30` }}><span style={{ fontSize:28 }}>{COUNTRIES.find(c=>c.code===user.country)?.flag||"🌍"}</span><div><div style={{ fontWeight:700 }}>{user.countryName} Style</div><div style={{ fontSize:12, color:C.sub }}>For your {user.goal} goal</div></div></Card>}
+      <div className="meals-grid-2x2">
       {sections.map(s=>(
-        <Card key={s.label} style={{ marginBottom:12 }}>
+        <Card key={s.label} style={{ marginBottom:0 }}>
           <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
             <div style={{ display:"flex", alignItems:"center", gap:10 }}>
               <div style={{ width:36, height:36, borderRadius:10, background:s.color+"20", display:"flex", alignItems:"center", justifyContent:"center", color:s.color }}>{s.icon}</div>
@@ -1829,6 +2158,7 @@ const DietPage = ({ t, user }) => {
           {s.items.map(item=><div key={item} style={{ display:"flex", alignItems:"center", gap:8, padding:"6px 0", borderBottom:`1px solid ${C.border}` }}><div style={{ width:5, height:5, borderRadius:"50%", background:s.color }}/><span style={{ fontSize:13 }}>{item}</span></div>)}
         </Card>
       ))}
+      </div>
     </div>
   );
 };
@@ -1855,9 +2185,9 @@ const AIPage = ({ t }) => {
   };
 
   return (
-    <div className="fade-in" style={{ display:"flex", flexDirection:"column", position:"fixed", top:50, left:0, right:0, bottom:65, maxWidth:430, margin:"0 auto" }}>
-      <div style={{ padding:"16px 16px 10px", borderBottom:`1px solid ${C.border}` }}>
-        <h1 style={{ fontFamily:"Bebas Neue", fontSize:28, letterSpacing:1 }}>AI <span style={{color:C.lime}}>COACH</span></h1>
+    <div className="fade-in chat-window" style={{ marginTop:12 }}>
+      <div style={{ padding:"16px 20px 12px", borderBottom:`1px solid ${C.border}` }}>
+        <h1 style={{ fontFamily:"Bebas Neue", fontSize:26, letterSpacing:1 }}>AI <span style={{color:C.lime}}>COACH</span></h1>
       </div>
       <div style={{ flex:1, overflowY:"auto", padding:"16px 16px 8px" }}>
         {msgs.map((m,i)=>(
@@ -1980,9 +2310,9 @@ FitoGlobe is not liable for any health outcomes resulting from use of this appli
 globefito@gmail.com`;
 
   return (
-    <div onClick={onClose} style={{ position:"fixed", inset:0, background:"#07070ECC", backdropFilter:"blur(8px)", zIndex:200, display:"flex", alignItems:"flex-end", justifyContent:"center" }}>
-      <div onClick={e=>e.stopPropagation()} className="fade-up"
-        style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:"20px 20px 0 0", width:"100%", maxWidth:430, maxHeight:"90vh", display:"flex", flexDirection:"column", boxSizing:"border-box" }}>
+    <div onClick={onClose} className="modal-overlay">
+      <div onClick={e=>e.stopPropagation()} className="modal-sheet fade-up"
+        style={{ maxHeight:"90vh", display:"flex", flexDirection:"column", overflow:"hidden" }}>
 
         {/* Toast */}
         {toast && (
@@ -2290,7 +2620,8 @@ const ScanPage = () => {
   const getBMIColor = (score) => score >= 70 ? C.lime : score >= 40 ? C.orange : "#FF4444";
 
   return (
-    <div className="fade-in" style={{ padding:"0 16px 100px" }}>
+    <div className="fade-in page-container">
+      <div style={{ maxWidth:640, margin:"0 auto" }}>
       {toast && <div style={{ position:"fixed", top:20, left:"50%", transform:"translateX(-50%)", background:C.lime, color:"#000", padding:"10px 20px", borderRadius:10, fontWeight:700, fontSize:13, zIndex:999 }}>{toast}</div>}
 
       <input ref={fileRef} type="file" accept="image/*" capture="environment" onChange={handleImage} style={{ display:"none" }}/>
@@ -2408,6 +2739,7 @@ const ScanPage = () => {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 };
@@ -2437,7 +2769,11 @@ const ChatPage = () => {
   };
 
   return (
-    <div className="fade-in" style={{ display:"flex", flexDirection:"column", position:"fixed", top:50, left:0, right:0, bottom:65, maxWidth:430, margin:"0 auto" }}>
+    <div className="fade-in chat-window" style={{ marginTop:12 }}>
+      <div style={{ padding:"16px 20px 12px", borderBottom:`1px solid ${C.border}`, display:"flex", alignItems:"center", gap:10 }}>
+        <div style={{ width:10, height:10, borderRadius:"50%", background:C.lime }}/>
+        <h1 style={{ fontFamily:"Bebas Neue", fontSize:26, letterSpacing:1, margin:0 }}>FITO <span style={{color:C.lime}}>CHAT</span></h1>
+      </div>
       {/* Messages */}
       <div style={{ flex:1, overflowY:"auto", padding:"16px 16px 8px" }}>
         {msgs.map((m, i) => (
@@ -2514,6 +2850,27 @@ export default function FitoGlobe() {
   const [page,      setPage]      = useState("dashboard");
   const [radial,    setRadial]    = useState(false);
   const [profOpen,  setProfOpen]  = useState(false);
+  const [time,      setTime]      = useState(new Date());
+
+  useEffect(() => {
+    const interval = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const tzMap = {
+    IN:"IST",JP:"JST",KR:"KST",US:"EST",GB:"GMT",DE:"CET",FR:"CET",
+    ES:"CET",IT:"CET",BR:"BRT",MX:"CST",CN:"CST",TH:"ICT",SA:"AST",
+    EG:"EET",TR:"TRT",PH:"PST",GR:"EET",AR:"ART",NG:"WAT",
+  };
+  const tz = tzMap[user?.country] || "UTC";
+
+  useEffect(() => {
+    const onNav = (e) => {
+      if (e.detail) setPage(e.detail);
+    };
+    window.addEventListener("fitoglobe_navigate", onNav);
+    return () => window.removeEventListener("fitoglobe_navigate", onNav);
+  }, []);
 
   const t = T[lang] || T.en;
 
@@ -2615,36 +2972,70 @@ export default function FitoGlobe() {
   };
 
   return (
-    <div style={{ background:"#030308", minHeight:"100vh", display:"flex", justifyContent:"center" }}>
-      <div style={{ fontFamily:"DM Sans, sans-serif", color:C.text, background:C.bg, minHeight:"100vh", width:"100%", maxWidth:430, position:"relative", overflow:"hidden" }}>
-        <GlobalStyles/>
-        {screen==="loading"  && (
-          <div style={{ minHeight:"100vh", background:C.bg, display:"flex", alignItems:"center", justifyContent:"center" }}>
-            <div style={{ textAlign:"center" }}>
-              <div style={{ width:40, height:40, border:`3px solid ${C.limeDim}`, borderTopColor:C.lime, borderRadius:"50%", animation:"spin 0.8s linear infinite", margin:"0 auto 16px" }}/>
-              <div style={{ fontFamily:"Bebas Neue", fontSize:24, letterSpacing:1, color:C.text }}>Loading FitoGlobe...</div>
-            </div>
+    <div style={{ background:C.bg, minHeight:"100vh", width:"100%", color:C.text, fontFamily:"DM Sans, sans-serif" }}>
+      <GlobalStyles/>
+      {screen==="loading"  && (
+        <div style={{ minHeight:"100vh", background:C.bg, display:"flex", alignItems:"center", justifyContent:"center" }}>
+          <div style={{ textAlign:"center" }}>
+            <div style={{ width:40, height:40, border:`3px solid ${C.limeDim}`, borderTopColor:C.lime, borderRadius:"50%", animation:"spin 0.8s linear infinite", margin:"0 auto 16px" }}/>
+            <div style={{ fontFamily:"Bebas Neue", fontSize:24, letterSpacing:1, color:C.text }}>Loading FitoGlobe...</div>
           </div>
-        )}
-        {screen==="callback" && <AuthCallback onAuthSuccess={handleAuthSuccess} onAuthError={handleAuthError}/>}
-        {screen==="language" && <LanguageScreen onSelect={handleLang}/>}
-        {screen==="auth"     && <AuthScreen t={t} lang={lang} onAuth={handleAuth} initialError={authError}/>}
-        {screen==="onboard"  && <OnboardingScreen t={t} lang={lang} onDone={handleOnboard}/>}
-        {screen==="app" && (
-          <>
+        </div>
+      )}
+      {screen==="callback" && <AuthCallback onAuthSuccess={handleAuthSuccess} onAuthError={handleAuthError}/>}
+      {screen==="language" && <LanguageScreen onSelect={handleLang}/>}
+      {screen==="auth"     && <AuthScreen t={t} lang={lang} onAuth={handleAuth} initialError={authError}/>}
+      {screen==="onboard"  && <OnboardingScreen t={t} lang={lang} onDone={handleOnboard}/>}
+      {screen==="app" && (
+        <div className="app-shell-root">
+          {/* Desktop & Tablet Sidebar */}
+          <DesktopSidebar
+            page={page}
+            setPage={setPage}
+            t={t}
+            user={user}
+            onProfile={()=>setProfOpen(true)}
+            onPlus={()=>setRadial(true)}
+            onLogout={handleLogout}
+          />
+
+          {/* Main Layout Area */}
+          <div className="app-main-layout">
+            {/* Desktop TopBar */}
+            <DesktopTopBar
+              page={page}
+              setPage={setPage}
+              t={t}
+              user={user}
+              time={time}
+              tz={tz}
+              onProfile={()=>setProfOpen(true)}
+            />
+
+            {/* Mobile Sticky Subpage Header */}
             {stickyPages[page] && (
-              <div style={{ position:"sticky", top:0, background:C.bg, borderBottom:`1px solid ${C.border}`, padding:"12px 16px", display:"flex", alignItems:"center", gap:12, zIndex:30 }}>
+              <div className="mobile-only" style={{ position:"sticky", top:0, background:C.bg, borderBottom:`1px solid ${C.border}`, padding:"12px 16px", display:"flex", alignItems:"center", gap:12, zIndex:30 }}>
                 <div onClick={()=>setPage("dashboard")} style={{ color:C.sub, cursor:"pointer", fontSize:18 }}>←</div>
                 <div style={{ fontFamily:"Bebas Neue", fontSize:22, letterSpacing:1 }}>{stickyPages[page]}</div>
               </div>
             )}
-            <div style={{ overflowY:"auto", height:"100vh" }}>{pages[page]||pages.dashboard}</div>
+
+            {/* Main Scrollable Content */}
+            <main className="app-content-scroll">
+              {pages[page]||pages.dashboard}
+            </main>
+          </div>
+
+          {/* Mobile Bottom Navigation */}
+          <div className="mobile-only">
             <BottomNav page={page} setPage={setPage} t={t} onPlus={()=>setRadial(true)}/>
-            <RadialMenu open={radial} onClose={()=>setRadial(false)} t={t} setPage={setPage} onProfile={()=>setProfOpen(true)}/>
-            {profOpen&&<ProfileModal user={user} t={t} onClose={()=>setProfOpen(false)} onLogout={handleLogout}/>}
-          </>
-        )}
-      </div>
+          </div>
+
+          {/* Modals & Popups */}
+          <RadialMenu open={radial} onClose={()=>setRadial(false)} t={t} setPage={setPage} onProfile={()=>setProfOpen(true)}/>
+          {profOpen && <ProfileModal user={user} t={t} onClose={()=>setProfOpen(false)} onLogout={handleLogout}/>}
+        </div>
+      )}
     </div>
   );
 }
