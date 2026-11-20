@@ -16,12 +16,6 @@
 
 ---
 
-## Quick navigation
-
-[Live app](https://fitoglobe.vercel.app) · [Features](#features) · [Tech stack](#tech-stack) · [Run locally](#run-locally) · [Project structure](#project-structure) · [Contributing](#contributing) · [Community & support](#community--support) · [License](#license)
-
----
-
 ## Try it
 
 Open the [live FitoGlobe app](https://fitoglobe.vercel.app). The interface is designed for mobile browsers, but also works on desktop.
@@ -114,7 +108,7 @@ The `build` script generates the Prisma client, `db:migrate` applies development
 
 ### 3. Start the frontend
 
-In a second terminal, from the repository root:
+In a second terminal:
 
 ```bash
 cd frontend
@@ -128,17 +122,6 @@ npm run dev
 ```
 
 Open the local URL printed by Vite. The frontend also provides `npm run build`, `npm run lint`, and `npm run preview` scripts.
-
-### Run the available checks
-
-From `frontend/`, run:
-
-```bash
-npm run lint
-npm run build
-```
-
-The backend's `npm run build` generates the Prisma client. Neither package currently defines an `npm test` script, so do not assume an automated test suite exists.
 
 > Some AI, authentication, and nutrition features require working backend services and third-party credentials; running the frontend alone will not enable them.
 
@@ -219,21 +202,9 @@ For local development, replace that deployment URL with the address where your b
 
 ## Contributing
 
-Contributions and documentation improvements are welcome! Read [CONTRIBUTING.md](CONTRIBUTING.md) for setup instructions, branch and PR guidance, and validation expectations.
+Contributions and documentation improvements are welcome. Create a descriptive branch, make a focused change, run relevant checks (for frontend changes, `npm run lint` and `npm run build` in `frontend/`), and open a pull request explaining what changed and how it was tested.
 
-Use the [pull request template](.github/PULL_REQUEST_TEMPLATE.md) to summarize the change, testing performed, and any migration or privacy impact.
-
-### Community & support
-
-| Topic | Resource |
-| --- | --- |
-| Getting help, reporting ordinary bugs, or proposing features | [Support guide](SUPPORT.md) and [GitHub Issues](https://github.com/ayushcmd/fitoglobe/issues) |
-| Reporting security vulnerabilities privately | [Security policy](SECURITY.md) |
-| Community expectations and conduct reports | [Code of Conduct](CODE_OF_CONDUCT.md) |
-| Contributing fixes, docs, or enhancements | [Contributor guide](CONTRIBUTING.md) |
-| Structured bug reports and feature requests | [Issue templates](.github/ISSUE_TEMPLATE/) |
-
-Do not put passwords, tokens, private fitness/health records, or security vulnerability details in public issues. Follow the private reporting directions in [SECURITY.md](SECURITY.md).
+If you discover a security issue, avoid posting private keys or exploit details in a public issue.
 
 ---
 
@@ -247,12 +218,6 @@ Do not put passwords, tokens, private fitness/health records, or security vulner
 - [x] Google OAuth
 - [x] Migrated to Render + Supabase (zero cold starts)
 
-
----
-
-## License
-
-FitoGlobe is distributed under the [MIT License](LICENSE). See the license file for conditions and copyright information.
 
 ---
 
